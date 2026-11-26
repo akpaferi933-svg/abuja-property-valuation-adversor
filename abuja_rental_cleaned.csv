@@ -1,0 +1,377 @@
+bedrooms,bathrooms,toilets,parking_space,title,town,state,price,state_clean,town_clean,title_clean,town_standard,price_source_type
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,75000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,75000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,80000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Lugbe District,Abuja,50000000.0,Abuja,Lugbe District,Terraced Duplexes,Lugbe,asking_price
+2.0,2.0,3.0,3.0,Block of Flats,Jahi,Abuja,22000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Lugbe District,Abuja,32000000.0,Abuja,Lugbe District,Terraced Duplexes,Lugbe,asking_price
+3.0,4.0,5.0,4.0,Block of Flats,Wuye,Abuja,250000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+4.0,4.0,5.0,7.0,Detached Duplex,Lugbe District,Abuja,75000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+3.0,4.0,4.0,4.0,Block of Flats,Wuye,Abuja,35000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+4.0,5.0,6.0,3.0,Terraced Duplexes,Wuye,Abuja,57000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,35000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,6.0,5.0,1.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+2.0,2.0,3.0,2.0,Block of Flats,Jahi,Abuja,28000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,90000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,3.0,Terraced Duplexes,Gwarinpa,Abuja,85000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,63000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Kubwa,Abuja,36500000.0,Abuja,Kubwa,Semi Detached Duplex,Kubwa,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,200000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,75000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,160000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,45000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,100000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,6.0,4.0,Terraced Duplexes,Jahi,Abuja,90000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+3.0,3.0,4.0,3.0,Block of Flats,Jahi,Abuja,32000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,150000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,30000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,3.0,4.0,2.0,Terraced Duplexes,Wuye,Abuja,60000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Gwarinpa,Abuja,55000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,5.0,5.0,Detached Duplex,Lokogoma District,Abuja,55000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Wuye,Abuja,75000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,8.0,5.0,6.0,Detached Duplex,Lokogoma District,Abuja,83000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,8.0,Detached Duplex,Gwarinpa,Abuja,150000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,6.0,Detached Duplex,Gwarinpa,Abuja,78500000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,80000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,70000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,55000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Lugbe District,Abuja,55000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,38000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,6.0,6.0,Semi Detached Duplex,Jahi,Abuja,75000000.0,Abuja,Jahi,Semi Detached Duplex,Jahi,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Wuye,Abuja,140000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+2.0,2.0,3.0,3.0,Block of Flats,Wuye,Abuja,25000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,40000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,17000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,75000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,5.0,Semi Detached Duplex,Gwarinpa,Abuja,125000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,3.0,Terraced Duplexes,Gwarinpa,Abuja,250000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,5.0,5.0,Terraced Duplexes,Jahi,Abuja,70000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,4.0,4.0,Terraced Duplexes,Wuye,Abuja,65000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,5.0,Terraced Duplexes,Gwarinpa,Abuja,46000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+3.0,3.0,3.0,4.0,Block of Flats,Jahi,Abuja,350000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,60000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,50000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Kubwa,Abuja,38900000.0,Abuja,Kubwa,Terraced Duplexes,Kubwa,asking_price
+4.0,4.0,6.0,5.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,6.0,3.0,Terraced Duplexes,Gwarinpa,Abuja,65000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,6.0,Detached Duplex,Lugbe District,Abuja,15000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,6.0,6.0,Terraced Duplexes,Wuye,Abuja,60000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,6.0,6.0,6.0,Terraced Duplexes,Lugbe District,Abuja,70000000.0,Abuja,Lugbe District,Terraced Duplexes,Lugbe,asking_price
+4.0,4.0,4.0,2.0,Detached Duplex,Gwarinpa,Abuja,70000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,4.0,4.0,Semi Detached Duplex,Lokogoma District,Abuja,43000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+3.0,4.0,4.0,5.0,Block of Flats,Lugbe District,Abuja,17500000.0,Abuja,Lugbe District,Block of Flats,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Lugbe District,Abuja,82000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+3.0,3.0,4.0,4.0,Block of Flats,Jahi,Abuja,250000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,70000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+2.0,3.0,3.0,3.0,Block of Flats,Jahi,Abuja,25000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+2.0,5.0,3.0,4.0,Block of Flats,Lugbe District,Abuja,40000000.0,Abuja,Lugbe District,Block of Flats,Lugbe,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Jahi,Abuja,75000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Wuye,Abuja,135000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Lugbe District,Abuja,70000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,8.0,Detached Duplex,Gwarinpa,Abuja,300000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+3.0,3.0,4.0,1.0,Block of Flats,Jahi,Abuja,35000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Jahi,Abuja,70000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,80000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,8.0,Terraced Duplexes,Lokogoma District,Abuja,60000000.0,Abuja,Lokogoma District,Terraced Duplexes,Lokogoma,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,38000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,2.0,Terraced Duplexes,Gwarinpa,Abuja,29999000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Lokogoma District,Abuja,60000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Gwarinpa,Abuja,40000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,42000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+2.0,3.0,2.0,4.0,Block of Flats,Gwarinpa,Abuja,270000000.0,Abuja,Gwarinpa,Block of Flats,Gwarinpa,asking_price
+4.0,7.0,7.0,4.0,Detached Duplex,Lugbe District,Abuja,42000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+3.0,3.0,4.0,3.0,Block of Flats,Jahi,Abuja,50000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,4.0,5.0,1.0,Terraced Duplexes,Jahi,Abuja,60000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+2.0,2.0,5.0,8.0,Block of Flats,Lugbe District,Abuja,60000000.0,Abuja,Lugbe District,Block of Flats,Lugbe,asking_price
+4.0,6.0,7.0,6.0,Detached Duplex,Gwarinpa,Abuja,90000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,50000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Lokogoma District,Abuja,55000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,130000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+3.0,3.0,4.0,3.0,Block of Flats,Wuye,Abuja,55000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Lugbe District,Abuja,41000000.0,Abuja,Lugbe District,Terraced Duplexes,Lugbe,asking_price
+2.0,2.0,3.0,2.0,Block of Flats,Gwarinpa,Abuja,75000000.0,Abuja,Gwarinpa,Block of Flats,Gwarinpa,asking_price
+4.0,5.0,5.0,5.0,Semi Detached Duplex,Wuye,Abuja,110000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Wuye,Abuja,300000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,5.0,5.0,8.0,Detached Duplex,Lugbe District,Abuja,50000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Wuye,Abuja,65000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,9.0,Semi Detached Duplex,Lugbe District,Abuja,65000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,60000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Lugbe District,Abuja,160000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+3.0,5.0,5.0,4.0,Block of Flats,Jahi,Abuja,240000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,3.0,4.0,3.0,Detached Duplex,Lugbe District,Abuja,20000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+2.0,3.0,3.0,4.0,Block of Flats,Jahi,Abuja,250000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,6.0,6.0,5.0,Detached Duplex,Lugbe District,Abuja,75000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Kubwa,Abuja,50000000.0,Abuja,Kubwa,Semi Detached Duplex,Kubwa,asking_price
+4.0,4.0,5.0,1.0,Terraced Duplexes,Gwarinpa,Abuja,250000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+3.0,3.0,4.0,3.0,Block of Flats,Jahi,Abuja,37000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,4.0,5.0,6.0,Semi Detached Duplex,Wuye,Abuja,67000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,4.0,5.0,1.0,Detached Duplex,Lokogoma District,Abuja,30000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,2.0,Terraced Duplexes,Jahi,Abuja,80000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+3.0,1.0,1.0,8.0,Block of Flats,Wuye,Abuja,200000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+2.0,2.0,2.0,4.0,Block of Flats,Gwarinpa,Abuja,110000000.0,Abuja,Gwarinpa,Block of Flats,Gwarinpa,asking_price
+4.0,6.0,7.0,1.0,Detached Duplex,Gwarinpa,Abuja,75000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+2.0,3.0,3.0,5.0,Block of Flats,Wuye,Abuja,24000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+4.0,5.0,5.0,5.0,Semi Detached Duplex,Lugbe District,Abuja,75000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Wuye,Abuja,50000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,1.0,Detached Duplex,Gwarinpa,Abuja,80000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,75000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,5.0,Detached Duplex,Gwarinpa,Abuja,105000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Gwarinpa,Abuja,42000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+2.0,2.0,3.0,1.0,Block of Flats,Wuye,Abuja,240000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,45000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,6.0,6.0,1.0,Detached Duplex,Lokogoma District,Abuja,85000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,2.0,Semi Detached Duplex,Gwarinpa,Abuja,110000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,4.0,4.0,Detached Duplex,Gwarinpa,Abuja,110000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,85000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,5.0,Detached Duplex,Kubwa,Abuja,41500000.0,Abuja,Kubwa,Detached Duplex,Kubwa,asking_price
+4.0,5.0,5.0,6.0,Terraced Duplexes,Jahi,Abuja,120000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,8.0,Detached Duplex,Gwarinpa,Abuja,75000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Kubwa,Abuja,31500000.0,Abuja,Kubwa,Semi Detached Duplex,Kubwa,asking_price
+4.0,4.0,5.0,7.0,Semi Detached Duplex,Wuye,Abuja,150000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,70000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+3.0,3.0,4.0,2.0,Block of Flats,Jahi,Abuja,40000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,40000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,8.0,Terraced Duplexes,Gwarinpa,Abuja,280000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,4.0,5.0,5.0,Semi Detached Duplex,Gwarinpa,Abuja,150000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,50000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,630000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,110000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Gwarinpa,Abuja,50000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,4.0,5.0,5.0,Semi Detached Duplex,Lokogoma District,Abuja,45000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,5.0,6.0,4.0,Terraced Duplexes,Jahi,Abuja,70000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Lokogoma District,Abuja,45000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,50000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,1.0,Semi Detached Duplex,Jahi,Abuja,200000000.0,Abuja,Jahi,Semi Detached Duplex,Jahi,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,75000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,7.0,Detached Duplex,Gwarinpa,Abuja,160000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,4.0,4.0,Terraced Duplexes,Lokogoma District,Abuja,43000000.0,Abuja,Lokogoma District,Terraced Duplexes,Lokogoma,asking_price
+4.0,4.0,5.0,8.0,Detached Duplex,Lokogoma District,Abuja,20000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+2.0,2.0,2.0,2.0,Block of Flats,Kubwa,Abuja,15000000.0,Abuja,Kubwa,Block of Flats,Kubwa,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,155000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,8.0,Terraced Duplexes,Jahi,Abuja,45000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,5.0,Semi Detached Duplex,Lokogoma District,Abuja,43000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Jahi,Abuja,60000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,3.0,Semi Detached Duplex,Gwarinpa,Abuja,50000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,4.0,5.0,Detached Duplex,Lokogoma District,Abuja,35000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,53000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Lokogoma District,Abuja,51600000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,4.0,4.0,5.0,Terraced Duplexes,Lokogoma District,Abuja,37000000.0,Abuja,Lokogoma District,Terraced Duplexes,Lokogoma,asking_price
+4.0,4.0,4.0,4.0,Detached Duplex,Gwarinpa,Abuja,58000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+3.0,4.0,4.0,3.0,Block of Flats,Gwarinpa,Abuja,30000000.0,Abuja,Gwarinpa,Block of Flats,Gwarinpa,asking_price
+4.0,4.0,5.0,5.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,1.0,Detached Duplex,Gwarinpa,Abuja,80000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,6.0,6.0,6.0,Semi Detached Duplex,Gwarinpa,Abuja,60000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Gwarinpa,Abuja,70000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Kubwa,Abuja,38900000.0,Abuja,Kubwa,Terraced Duplexes,Kubwa,asking_price
+4.0,5.0,5.0,6.0,Detached Duplex,Gwarinpa,Abuja,75000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,7.0,Detached Duplex,Lokogoma District,Abuja,68000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,9.0,Detached Duplex,Lugbe District,Abuja,57000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,4.0,5.0,Terraced Duplexes,Jahi,Abuja,55000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,75000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,6.0,Terraced Duplexes,Wuye,Abuja,55000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Wuye,Abuja,60000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,4.0,3.0,Terraced Duplexes,Jahi,Abuja,60000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,140000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,45000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,4.0,6.0,Semi Detached Duplex,Gwarinpa,Abuja,55000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Lugbe District,Abuja,50000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+4.0,5.0,6.0,3.0,Terraced Duplexes,Wuye,Abuja,70000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Jahi,Abuja,80000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,55000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,1.0,Detached Duplex,Gwarinpa,Abuja,170000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,3.0,Detached Duplex,Lugbe District,Abuja,80000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,6.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,62000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,6.0,4.0,Terraced Duplexes,Lugbe District,Abuja,50000000.0,Abuja,Lugbe District,Terraced Duplexes,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,35000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,3.0,Terraced Duplexes,Gwarinpa,Abuja,45000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,6.0,4.0,Terraced Duplexes,Wuye,Abuja,100000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,2.0,Terraced Duplexes,Kubwa,Abuja,40000000.0,Abuja,Kubwa,Terraced Duplexes,Kubwa,asking_price
+4.0,5.0,5.0,2.0,Terraced Duplexes,Wuye,Abuja,90000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,4.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,50000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,3.0,Terraced Duplexes,Lugbe District,Abuja,37000000.0,Abuja,Lugbe District,Terraced Duplexes,Lugbe,asking_price
+2.0,2.0,3.0,4.0,Block of Flats,Lokogoma District,Abuja,12000000.0,Abuja,Lokogoma District,Block of Flats,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,85000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,6.0,5.0,Semi Detached Duplex,Wuye,Abuja,65000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,60000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,70000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,75000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+3.0,3.0,4.0,1.0,Block of Flats,Wuye,Abuja,250000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,70000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,7.0,Detached Duplex,Lokogoma District,Abuja,50000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,2.0,Detached Duplex,Lokogoma District,Abuja,70000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+3.0,2.0,3.0,2.0,Block of Flats,Lugbe District,Abuja,42000000.0,Abuja,Lugbe District,Block of Flats,Lugbe,asking_price
+4.0,4.0,5.0,8.0,Detached Duplex,Gwarinpa,Abuja,100000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Lokogoma District,Abuja,50000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,60000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,2.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Lugbe District,Abuja,65000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,7.0,Detached Duplex,Lokogoma District,Abuja,55000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,55000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,6.0,Detached Duplex,Gwarinpa,Abuja,100000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,6.0,4.0,Terraced Duplexes,Wuye,Abuja,90000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Lokogoma District,Abuja,35000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,55000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,3.0,Terraced Duplexes,Wuye,Abuja,60000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Gwarinpa,Abuja,50000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,5.0,8.0,Detached Duplex,Gwarinpa,Abuja,180000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,5.0,Detached Duplex,Lokogoma District,Abuja,75000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Wuye,Abuja,160000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,4.0,6.0,4.0,Terraced Duplexes,Wuye,Abuja,67000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,8.0,Detached Duplex,Gwarinpa,Abuja,80000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Lokogoma District,Abuja,32000000.0,Abuja,Lokogoma District,Terraced Duplexes,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,56000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,29500000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+3.0,2.0,3.0,3.0,Block of Flats,Kubwa,Abuja,20000000.0,Abuja,Kubwa,Block of Flats,Kubwa,asking_price
+4.0,5.0,4.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,100000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,70000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,6.0,1.0,Detached Duplex,Lokogoma District,Abuja,70000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,2.0,Terraced Duplexes,Wuye,Abuja,75000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+3.0,3.0,4.0,4.0,Block of Flats,Jahi,Abuja,35000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Wuye,Abuja,120000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,4.0,5.0,8.0,Detached Duplex,Gwarinpa,Abuja,185000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,6.0,6.0,Semi Detached Duplex,Wuye,Abuja,150000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,47000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Lugbe District,Abuja,65000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,1.0,Detached Duplex,Lokogoma District,Abuja,47000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,3.0,Terraced Duplexes,Kubwa,Abuja,39000000.0,Abuja,Kubwa,Terraced Duplexes,Kubwa,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,59000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Gwarinpa,Abuja,75000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,75000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,38000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Gwarinpa,Abuja,350000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,6.0,4.0,Terraced Duplexes,Wuye,Abuja,65000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,5.0,Terraced Duplexes,Kubwa,Abuja,55000000.0,Abuja,Kubwa,Terraced Duplexes,Kubwa,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,22500000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,5.0,Terraced Duplexes,Wuye,Abuja,130000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,5.0,Semi Detached Duplex,Wuye,Abuja,150000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,110000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,79999999.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,30000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+3.0,4.0,4.0,3.0,Block of Flats,Jahi,Abuja,30000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Lugbe District,Abuja,40000000.0,Abuja,Lugbe District,Terraced Duplexes,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Jahi,Abuja,85000000.0,Abuja,Jahi,Detached Duplex,Jahi,asking_price
+3.0,5.0,5.0,3.0,Block of Flats,Wuye,Abuja,45000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+4.0,4.0,5.0,8.0,Semi Detached Duplex,Lokogoma District,Abuja,65000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,55000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,5.0,Terraced Duplexes,Wuye,Abuja,65000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,55000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,7.0,Detached Duplex,Lokogoma District,Abuja,30000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+2.0,5.0,3.0,1.0,Block of Flats,Gwarinpa,Abuja,130000000.0,Abuja,Gwarinpa,Block of Flats,Gwarinpa,asking_price
+4.0,5.0,6.0,4.0,Terraced Duplexes,Jahi,Abuja,80000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,3.0,Semi Detached Duplex,Wuye,Abuja,170000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,4.0,5.0,5.0,Detached Duplex,Lugbe District,Abuja,32000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,185000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+3.0,3.0,4.0,4.0,Block of Flats,Gwarinpa,Abuja,30000000.0,Abuja,Gwarinpa,Block of Flats,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,58000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,6.0,Terraced Duplexes,Jahi,Abuja,70000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,25000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,6.0,Detached Duplex,Lugbe District,Abuja,50000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,75000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,3.0,Semi Detached Duplex,Lokogoma District,Abuja,55000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,5.0,6.0,4.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,5.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Jahi,Abuja,60000000.0,Abuja,Jahi,Detached Duplex,Jahi,asking_price
+2.0,2.0,3.0,3.0,Block of Flats,Wuye,Abuja,28000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+3.0,3.0,4.0,4.0,Block of Flats,Wuye,Abuja,53000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,100000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,3.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,35000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,55000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,150000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,1.0,Detached Duplex,Lokogoma District,Abuja,85000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,6.0,7.0,2.0,Terraced Duplexes,Gwarinpa,Abuja,80000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,70000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,47000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+3.0,4.0,4.0,4.0,Block of Flats,Jahi,Abuja,35000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,60000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,6.0,4.0,Detached Duplex,Kubwa,Abuja,41500000.0,Abuja,Kubwa,Detached Duplex,Kubwa,asking_price
+4.0,4.0,5.0,2.0,Terraced Duplexes,Kubwa,Abuja,29999000.0,Abuja,Kubwa,Terraced Duplexes,Kubwa,asking_price
+4.0,5.0,5.0,2.0,Terraced Duplexes,Gwarinpa,Abuja,50000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,6.0,6.0,5.0,Detached Duplex,Lugbe District,Abuja,48000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,46000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,90000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+3.0,7.0,7.0,4.0,Block of Flats,Kubwa,Abuja,30000000.0,Abuja,Kubwa,Block of Flats,Kubwa,asking_price
+2.0,2.0,3.0,4.0,Block of Flats,Jahi,Abuja,300000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,4.0,5.0,8.0,Semi Detached Duplex,Gwarinpa,Abuja,170000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,6.0,Detached Duplex,Lokogoma District,Abuja,80000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,6.0,4.0,Detached Duplex,Gwarinpa,Abuja,120000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,1.0,Detached Duplex,Lokogoma District,Abuja,65000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Kubwa,Abuja,41500000.0,Abuja,Kubwa,Detached Duplex,Kubwa,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,40000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,4.0,4.0,Terraced Duplexes,Wuye,Abuja,55000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,30000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,90000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,300000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,45000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,90000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,12000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,2.0,Semi Detached Duplex,Gwarinpa,Abuja,65000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Gwarinpa,Abuja,70000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Gwarinpa,Abuja,35000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,5.0,7.0,Semi Detached Duplex,Lokogoma District,Abuja,35000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,8.0,Detached Duplex,Gwarinpa,Abuja,85000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Wuye,Abuja,150000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,4.0,5.0,6.0,Detached Duplex,Lokogoma District,Abuja,29000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,3.0,Terraced Duplexes,Gwarinpa,Abuja,75000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,5.0,8.0,Semi Detached Duplex,Gwarinpa,Abuja,65000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,1.0,Terraced Duplexes,Gwarinpa,Abuja,60000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,4.0,5.0,4.0,Detached Duplex,Jahi,Abuja,400000000.0,Abuja,Jahi,Detached Duplex,Jahi,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,48000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,6.0,Detached Duplex,Gwarinpa,Abuja,130000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Kubwa,Abuja,35900000.0,Abuja,Kubwa,Terraced Duplexes,Kubwa,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,40000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,6.0,4.0,Terraced Duplexes,Gwarinpa,Abuja,60000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,5.0,3.0,Semi Detached Duplex,Gwarinpa,Abuja,48000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,140000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,7.0,Detached Duplex,Gwarinpa,Abuja,150000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+2.0,2.0,3.0,3.0,Block of Flats,Jahi,Abuja,60000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Wuye,Abuja,110000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,26000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,90000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,4.0,5.0,Detached Duplex,Lokogoma District,Abuja,36000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,1.0,Detached Duplex,Lokogoma District,Abuja,75000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,6.0,6.0,5.0,Detached Duplex,Lugbe District,Abuja,85000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,60000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,60000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,4.0,4.0,Terraced Duplexes,Wuye,Abuja,45000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,6.0,Detached Duplex,Gwarinpa,Abuja,80000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,6.0,3.0,Terraced Duplexes,Jahi,Abuja,65000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Jahi,Abuja,60000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Wuye,Abuja,90000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+3.0,5.0,5.0,4.0,Block of Flats,Jahi,Abuja,250000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,4.0,5.0,6.0,Semi Detached Duplex,Lokogoma District,Abuja,38000000.0,Abuja,Lokogoma District,Semi Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,3.0,Semi Detached Duplex,Wuye,Abuja,170000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,4.0,5.0,5.0,Terraced Duplexes,Jahi,Abuja,73000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,6.0,Detached Duplex,Gwarinpa,Abuja,50000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,7.0,1.0,Detached Duplex,Gwarinpa,Abuja,150000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,6.0,3.0,Terraced Duplexes,Wuye,Abuja,80000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+3.0,4.0,4.0,4.0,Block of Flats,Jahi,Abuja,38000000.0,Abuja,Jahi,Block of Flats,Jahi,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,45000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+2.0,5.0,3.0,4.0,Block of Flats,Gwarinpa,Abuja,16000000.0,Abuja,Gwarinpa,Block of Flats,Gwarinpa,asking_price
+4.0,4.0,4.0,4.0,Detached Duplex,Lokogoma District,Abuja,80000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,6.0,6.0,6.0,Semi Detached Duplex,Wuye,Abuja,180000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,5.0,6.0,4.0,Terraced Duplexes,Jahi,Abuja,55000000.0,Abuja,Jahi,Terraced Duplexes,Jahi,asking_price
+4.0,5.0,5.0,5.0,Semi Detached Duplex,Lugbe District,Abuja,55000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,5.0,Detached Duplex,Lokogoma District,Abuja,23000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Lugbe District,Abuja,75000000.0,Abuja,Lugbe District,Semi Detached Duplex,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Gwarinpa,Abuja,65000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,6.0,Detached Duplex,Gwarinpa,Abuja,60000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,5.0,Detached Duplex,Gwarinpa,Abuja,80000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Terraced Duplexes,Lugbe District,Abuja,45000000.0,Abuja,Lugbe District,Terraced Duplexes,Lugbe,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lugbe District,Abuja,120000000.0,Abuja,Lugbe District,Detached Duplex,Lugbe,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Wuye,Abuja,67000000.0,Abuja,Wuye,Terraced Duplexes,Wuye,asking_price
+4.0,4.0,5.0,4.0,Terraced Duplexes,Kubwa,Abuja,38900000.0,Abuja,Kubwa,Terraced Duplexes,Kubwa,asking_price
+3.0,3.0,4.0,4.0,Block of Flats,Wuye,Abuja,240000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+4.0,4.0,5.0,4.0,Semi Detached Duplex,Gwarinpa,Abuja,85000000.0,Abuja,Gwarinpa,Semi Detached Duplex,Gwarinpa,asking_price
+4.0,4.0,5.0,5.0,Detached Duplex,Gwarinpa,Abuja,152000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
+3.0,4.0,5.0,4.0,Block of Flats,Wuye,Abuja,53000000.0,Abuja,Wuye,Block of Flats,Wuye,asking_price
+3.0,3.0,4.0,3.0,Block of Flats,Lokogoma District,Abuja,22000000.0,Abuja,Lokogoma District,Block of Flats,Lokogoma,asking_price
+4.0,5.0,5.0,4.0,Semi Detached Duplex,Wuye,Abuja,120000000.0,Abuja,Wuye,Semi Detached Duplex,Wuye,asking_price
+4.0,4.0,5.0,8.0,Detached Duplex,Lokogoma District,Abuja,85000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,1.0,Detached Duplex,Lokogoma District,Abuja,50000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,4.0,5.0,3.0,Terraced Duplexes,Gwarinpa,Abuja,45000000.0,Abuja,Gwarinpa,Terraced Duplexes,Gwarinpa,asking_price
+4.0,5.0,5.0,4.0,Detached Duplex,Lokogoma District,Abuja,32000000.0,Abuja,Lokogoma District,Detached Duplex,Lokogoma,asking_price
+4.0,5.0,4.0,6.0,Detached Duplex,Gwarinpa,Abuja,60000000.0,Abuja,Gwarinpa,Detached Duplex,Gwarinpa,asking_price
