@@ -6,7 +6,7 @@ import pydeck as pdk
 import streamlit as st
 
 st.set_page_config(
-    page_title="Nigeria Property Valuation & Long-Term Forecast Advisor",
+    page_title="Nigeria Property Valuation & Future Forecast Advisor",
     layout="wide",
 )
 
@@ -104,48 +104,47 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# (State/FCT, Region, Mid-City Reference Price, Base CAGR, Base Gross Yield, Coverage, Lat, Lon)
+# (State/FCT, Region, Mid-City Reference Price, Base CAGR, Base Gross Yield, Coverage, Lat, Lon, Market Note)
 NIGERIA_LOCATIONS = [
-    ("FCT Abuja", "North Central", 180_000_000, 0.042, 0.055, "High", 9.0765, 7.3986),
-    ("Lagos", "South West", 220_000_000, 0.045, 0.062, "High", 6.5244, 3.3792),
-    ("Rivers", "South South", 85_000_000, 0.025, 0.058, "Medium", 4.8156, 7.0498),
-    ("Oyo", "South West", 55_000_000, 0.028, 0.056, "Medium", 8.2151, 3.5643),
-    ("Ogun", "South West", 48_000_000, 0.032, 0.054, "Medium", 6.9789, 3.4389),
-    ("Enugu", "South East", 65_000_000, 0.026, 0.055, "Medium", 6.5244, 7.5086),
-    ("Anambra", "South East", 68_000_000, 0.027, 0.055, "Medium", 6.2183, 6.9532),
-    ("Kano", "North West", 60_000_000, 0.022, 0.057, "Medium", 12.0022, 8.5920),
-    ("Kaduna", "North West", 48_000_000, 0.010, 0.056, "Medium", 10.5105, 7.4165),
-    ("Edo", "South South", 55_000_000, 0.024, 0.056, "Medium", 6.6077, 5.9723),
-    ("Delta", "South South", 58_000_000, 0.020, 0.057, "Medium", 5.5273, 6.1784),
-    ("Akwa Ibom", "South South", 52_000_000, 0.023, 0.056, "Medium", 4.9409, 7.8412),
-    ("Cross River", "South South", 42_000_000, 0.016, 0.055, "Baseline", 5.8672, 8.5205),
-    ("Abia", "South East", 46_000_000, 0.018, 0.056, "Baseline", 5.4541, 7.5153),
-    ("Imo", "South East", 50_000_000, 0.020, 0.056, "Baseline", 5.5720, 7.0588),
-    ("Ebonyi", "South East", 32_000_000, 0.014, 0.055, "Baseline", 6.1997, 8.0349),
-    ("Ondo", "South West", 38_000_000, 0.016, 0.055, "Baseline", 7.0210, 5.0567),
-    ("Osun", "South West", 35_000_000, 0.015, 0.054, "Baseline", 7.5484, 4.4978),
-    ("Ekiti", "South West", 30_000_000, 0.013, 0.054, "Baseline", 7.7369, 5.2738),
-    ("Kwara", "North Central", 40_000_000, 0.018, 0.055, "Baseline", 8.8368, 4.6688),
-    ("Plateau", "North Central", 42_000_000, 0.010, 0.055, "Baseline", 9.0583, 9.6826),
-    ("Niger", "North Central", 38_000_000, 0.018, 0.055, "Baseline", 9.9326, 5.6511),
-    ("Kogi", "North Central", 28_000_000, -0.004, 0.055, "Baseline", 7.7950, 6.6869),
-    ("Benue", "North Central", 30_000_000, -0.005, 0.055, "Baseline", 7.3506, 8.7773),
-    ("Nasarawa", "North Central", 45_000_000, 0.028, 0.055, "Medium", 8.4388, 8.2383),
-    ("Bauchi", "North East", 28_000_000, 0.008, 0.056, "Baseline", 10.6371, 10.0807),
-    ("Borno", "North East", 25_000_000, -0.010, 0.056, "Baseline", 11.8311, 13.1510),
-    ("Gombe", "North East", 27_000_000, 0.009, 0.055, "Baseline", 10.2791, 11.1731),
-    ("Taraba", "North East", 24_000_000, -0.005, 0.055, "Baseline", 8.0141, 10.7376),
-    ("Adamawa", "North East", 26_000_000, -0.004, 0.055, "Baseline", 9.3265, 12.3984),
-    ("Yobe", "North East", 22_000_000, -0.012, 0.056, "Baseline", 12.1233, 11.5066),
-    ("Sokoto", "North West", 30_000_000, 0.006, 0.056, "Baseline", 13.0611, 5.3152),
-    ("Zamfara", "North West", 22_000_000, -0.015, 0.056, "Baseline", 12.0079, 6.4191),
-    ("Kebbi", "North West", 24_000_000, 0.004, 0.056, "Baseline", 11.4168, 4.1075),
-    ("Jigawa", "North West", 23_000_000, 0.005, 0.056, "Baseline", 12.5631, 9.3800),
-    ("Katsina", "North West", 30_000_000, 0.007, 0.056, "Baseline", 12.5631, 7.6207),
-    ("Bayelsa", "South South", 36_000_000, 0.010, 0.056, "Baseline", 4.7630, 6.0289),
+    ("FCT Abuja", "North Central", 180_000_000, 0.042, 0.055, "High", 9.0765, 7.3986, "prime urban demand and infrastructure expansion"),
+    ("Lagos", "South West", 220_000_000, 0.045, 0.062, "High", 6.5244, 3.3792, "prime land scarcity and strong urban demand"),
+    ("Rivers", "South South", 85_000_000, 0.025, 0.058, "Medium", 4.8156, 7.0498, "commercial activity with moderate growth"),
+    ("Oyo", "South West", 55_000_000, 0.028, 0.056, "Medium", 8.2151, 3.5643, "steady urban expansion and residential demand"),
+    ("Ogun", "South West", 48_000_000, 0.032, 0.054, "Medium", 6.9789, 3.4389, "urban spillover and road development"),
+    ("Enugu", "South East", 65_000_000, 0.026, 0.055, "Medium", 6.5244, 7.5086, "steady city demand and commercial growth"),
+    ("Anambra", "South East", 68_000_000, 0.027, 0.055, "Medium", 6.2183, 6.9532, "active commercial trade and urban demand"),
+    ("Kano", "North West", 60_000_000, 0.022, 0.057, "Medium", 12.0022, 8.5920, "regional commercial hub with gradual growth"),
+    ("Kaduna", "North West", 48_000_000, 0.010, 0.056, "Medium", 10.5105, 7.4165, "mixed market momentum and security sensitivity"),
+    ("Edo", "South South", 55_000_000, 0.024, 0.056, "Medium", 6.6077, 5.9723, "steady urban development and residential demand"),
+    ("Delta", "South South", 58_000_000, 0.020, 0.057, "Medium", 5.5273, 6.1784, "moderate commercial and residential activity"),
+    ("Akwa Ibom", "South South", 52_000_000, 0.023, 0.056, "Medium", 4.9409, 7.8412, "infrastructure growth and steady demand"),
+    ("Cross River", "South South", 42_000_000, 0.016, 0.055, "Baseline", 5.8672, 8.5205, "gradual growth and tourism/commercial baseline"),
+    ("Abia", "South East", 46_000_000, 0.018, 0.056, "Baseline", 5.4541, 7.5153, "commercial activity with gradual appreciation"),
+    ("Imo", "South East", 50_000_000, 0.020, 0.056, "Baseline", 5.5720, 7.0588, "steady urban demand in city centers"),
+    ("Ebonyi", "South East", 32_000_000, 0.014, 0.055, "Baseline", 6.1997, 8.0349, "gradual expansion in developing corridors"),
+    ("Ondo", "South West", 38_000_000, 0.016, 0.055, "Baseline", 7.0210, 5.0567, "moderate local demand and gradual growth"),
+    ("Osun", "South West", 35_000_000, 0.015, 0.054, "Baseline", 7.5484, 4.4978, "steady town demand with moderate growth"),
+    ("Ekiti", "South West", 30_000_000, 0.013, 0.054, "Baseline", 7.7369, 5.2738, "gradual appreciation in core town areas"),
+    ("Kwara", "North Central", 40_000_000, 0.018, 0.055, "Baseline", 8.8368, 4.6688, "steady residential demand and moderate growth"),
+    ("Plateau", "North Central", 42_000_000, 0.010, 0.055, "Baseline", 9.0583, 9.6826, "mixed conditions and cautious growth"),
+    ("Niger", "North Central", 38_000_000, 0.018, 0.055, "Baseline", 9.9326, 5.6511, "regional spillover and gradual growth"),
+    ("Kogi", "North Central", 28_000_000, -0.004, 0.055, "Baseline", 7.7950, 6.6869, "slow market demand and price drop pressure"),
+    ("Benue", "North Central", 30_000_000, -0.005, 0.055, "Baseline", 7.3506, 8.7773, "weak market momentum and price drop pressure"),
+    ("Nasarawa", "North Central", 45_000_000, 0.028, 0.055, "Medium", 8.4388, 8.2383, "urban spillover and road development"),
+    ("Bauchi", "North East", 28_000_000, 0.008, 0.056, "Baseline", 10.6371, 10.0807, "slow to moderate growth in core town"),
+    ("Borno", "North East", 25_000_000, -0.010, 0.056, "Baseline", 11.8311, 13.1510, "insecurity and sluggish market demand"),
+    ("Gombe", "North East", 27_000_000, 0.009, 0.055, "Baseline", 10.2791, 11.1731, "gradual town growth with low turnover"),
+    ("Taraba", "North East", 24_000_000, -0.005, 0.055, "Baseline", 8.0141, 10.7376, "slow market demand and price drop pressure"),
+    ("Adamawa", "North East", 26_000_000, -0.004, 0.055, "Baseline", 9.3265, 12.3984, "sluggish demand and downward pressure"),
+    ("Yobe", "North East", 22_000_000, -0.012, 0.056, "Baseline", 12.1233, 11.5066, "weak demand and price drop pressure"),
+    ("Sokoto", "North West", 30_000_000, 0.006, 0.056, "Baseline", 13.0611, 5.3152, "slow growth and limited high-value demand"),
+    ("Zamfara", "North West", 22_000_000, -0.015, 0.056, "Baseline", 12.0079, 6.4191, "insecurity and price drop pressure"),
+    ("Kebbi", "North West", 24_000_000, 0.004, 0.056, "Baseline", 11.4168, 4.1075, "gradual baseline growth with slow turnover"),
+    ("Jigawa", "North West", 23_000_000, 0.005, 0.056, "Baseline", 12.5631, 9.3800, "slow baseline appreciation"),
+    ("Katsina", "North West", 30_000_000, 0.007, 0.056, "Baseline", 12.5631, 7.6207, "slow to moderate market activity"),
+    ("Bayelsa", "South South", 36_000_000, 0.010, 0.056, "Baseline", 4.7630, 6.0289, "moderate baseline growth with terrain constraints"),
 ]
 
-# Community / Area tiers to differentiate prime city centers, developing cities, and satellite communities
 COMMUNITY_TIERS = {
     "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)": {
         "price_mult": 2.40,
@@ -164,10 +163,9 @@ COMMUNITY_TIERS = {
     },
 }
 
-# Known high-value & satellite district overrides + exact coordinates for accurate map pinning
 KNOWN_AREAS = {
     "asokoro": ("FCT Abuja", 820_000_000, 0.048, 9.0479, 7.5155, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
-    "maitama": ("FCT Abuja", 900_000_000, 0.048, 9.0882, 7.4934, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
+    "maitama": ("FCT Abuja", 950_000_000, 0.048, 9.0882, 7.4934, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
     "wuse 2": ("FCT Abuja", 650_000_000, 0.045, 9.0787, 7.4793, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
     "wuse": ("FCT Abuja", 520_000_000, 0.044, 9.0765, 7.4700, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
     "guzape": ("FCT Abuja", 580_000_000, 0.047, 9.0160, 7.5140, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
@@ -181,11 +179,11 @@ KNOWN_AREAS = {
     "kubwa": ("FCT Abuja", 85_000_000, 0.041, 9.1538, 7.3220, "Outskirt / Satellite Community & Rural LGA (e.g., Lugbe, Kubwa, Kuje, Epe)"),
     "kuje": ("FCT Abuja", 35_000_000, 0.038, 8.8795, 7.2276, "Outskirt / Satellite Community & Rural LGA (e.g., Lugbe, Kubwa, Kuje, Epe)"),
     "gwagwalada": ("FCT Abuja", 30_000_000, 0.035, 8.9408, 7.0818, "Outskirt / Satellite Community & Rural LGA (e.g., Lugbe, Kubwa, Kuje, Epe)"),
-    "ikoyi": ("Lagos", 950_000_000, 0.050, 6.4549, 3.4346, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
-    "banana island": ("Lagos", 1_400_000_000, 0.052, 6.4650, 3.4510, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
-    "victoria island": ("Lagos", 780_000_000, 0.048, 6.4281, 3.4219, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
-    "lekki": ("Lagos", 320_000_000, 0.046, 6.4698, 3.5852, "Developing / Mid-Tier City District (e.g., Gwarinpa, Wuye, Lekki, Ikeja)"),
-    "ikeja": ("Lagos", 350_000_000, 0.044, 6.6018, 3.3515, "Developing / Mid-Tier City District (e.g., Gwarinpa, Wuye, Lekki, Ikeja)"),
+    "ikoyi": ("Lagos", 1_200_000_000, 0.050, 6.4549, 3.4346, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
+    "banana island": ("Lagos", 2_500_000_000, 0.052, 6.4650, 3.4510, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
+    "victoria island": ("Lagos", 950_000_000, 0.048, 6.4281, 3.4219, "Prime / Major City Core (e.g., Asokoro, Maitama, Ikoyi, VI, GRA)"),
+    "lekki": ("Lagos", 340_000_000, 0.046, 6.4698, 3.5852, "Developing / Mid-Tier City District (e.g., Gwarinpa, Wuye, Lekki, Ikeja)"),
+    "ikeja": ("Lagos", 360_000_000, 0.044, 6.6018, 3.3515, "Developing / Mid-Tier City District (e.g., Gwarinpa, Wuye, Lekki, Ikeja)"),
     "ajah": ("Lagos", 130_000_000, 0.043, 6.4667, 3.5667, "Outskirt / Satellite Community & Rural LGA (e.g., Lugbe, Kubwa, Kuje, Epe)"),
     "epe": ("Lagos", 45_000_000, 0.046, 6.5841, 3.9834, "Outskirt / Satellite Community & Rural LGA (e.g., Lugbe, Kubwa, Kuje, Epe)"),
     "ikorodu": ("Lagos", 50_000_000, 0.040, 6.6194, 3.5105, "Outskirt / Satellite Community & Rural LGA (e.g., Lugbe, Kubwa, Kuje, Epe)"),
@@ -258,18 +256,6 @@ def format_naira(amount: float) -> str:
     return f"N{amount:,.0f}"
 
 
-def normalize_state_name(raw_value: str) -> str:
-    if not isinstance(raw_value, str):
-        return "FCT Abuja"
-    cleaned = raw_value.strip().lower()
-    if "abuja" in cleaned or "fct" in cleaned or "federal capital" in cleaned:
-        return "FCT Abuja"
-    for state_name, *_ in NIGERIA_LOCATIONS:
-        if state_name.lower() in cleaned:
-            return state_name
-    return "FCT Abuja"
-
-
 def resolve_location_profile(
     place_name: str,
     state_name: str,
@@ -280,7 +266,6 @@ def resolve_location_profile(
     state_meta = next(item for item in NIGERIA_LOCATIONS if item[0] == state_name)
     tier_meta = COMMUNITY_TIERS[community_tier_key]
 
-    # Check if typed area matches a known district/community in that state
     matched_known = None
     for key, val in KNOWN_AREAS.items():
         if key in clean_place and val[0] == state_name:
@@ -289,11 +274,11 @@ def resolve_location_profile(
 
     if matched_known:
         _, area_base_price, area_cagr, lat, lon, matched_tier = matched_known
-        estimated_now = round(area_base_price * property_multiplier, -5)
+        automatic_price = round(area_base_price * property_multiplier, -5)
         effective_cagr = area_cagr
         tier_label = COMMUNITY_TIERS[matched_tier]["label"]
     else:
-        estimated_now = round(state_meta[2] * tier_meta["price_mult"] * property_multiplier, -5)
+        automatic_price = round(state_meta[2] * tier_meta["price_mult"] * property_multiplier, -5)
         effective_cagr = state_meta[3] + tier_meta["cagr_bonus"]
         base_lat, base_lon = float(state_meta[6]), float(state_meta[7])
         if clean_place:
@@ -305,7 +290,7 @@ def resolve_location_profile(
         tier_label = tier_meta["label"]
 
     return {
-        "estimated_now": float(max(2_000_000, estimated_now)),
+        "automatic_price": float(max(2_000_000, automatic_price)),
         "effective_cagr": effective_cagr,
         "lat": lat,
         "lon": lon,
@@ -313,6 +298,7 @@ def resolve_location_profile(
         "region": state_meta[1],
         "gross_yield": state_meta[4],
         "coverage": state_meta[5],
+        "market_note": state_meta[8],
     }
 
 
@@ -320,13 +306,13 @@ def resolve_location_profile(
 def load_nationwide_properties() -> pd.DataFrame:
     base_rows = []
     property_types = [
-        ("Standard Residential Plot (500–600 sqm)", 0, 1.00, 0.045),
+        ("Standard Residential Plot (500-600 sqm)", 0, 1.00, 0.045),
         ("4-Bedroom Semi-Detached Duplex", 4, 1.25, 0.056),
         ("5-Bedroom Fully Detached Duplex", 5, 1.65, 0.052),
         ("3-Bedroom Detached Bungalow", 3, 0.85, 0.060),
     ]
 
-    for state_name, region, base_price, base_cagr, base_yield, coverage, lat, lon in NIGERIA_LOCATIONS:
+    for state_name, region, base_price, base_cagr, base_yield, coverage, lat, lon, _ in NIGERIA_LOCATIONS:
         for p_type, beds, mult, y_val in property_types:
             fair_val = round(base_price * mult, -5)
             asking_val = round(fair_val * 0.97, -5)
@@ -349,15 +335,16 @@ def load_nationwide_properties() -> pd.DataFrame:
     return pd.DataFrame(base_rows)
 
 
-def analyze_user_text_and_forecast(
-    user_text: str,
-    starting_price: float,
+def analyze_automatic_forecast(
+    market_text: str,
+    automatic_price: float,
     base_cagr: float,
     target_year: int,
     current_year: int = 2026,
+    realistic_ceiling: float = 10_000_000_000.0,
 ) -> dict:
     years = max(1, target_year - current_year)
-    text_clean = (user_text or "").strip().lower()
+    text_clean = (market_text or "").strip().lower()
     tokens = re.findall(r"[a-z0-9]+", text_clean)
 
     text_rate_delta = 0.0
@@ -386,38 +373,47 @@ def analyze_user_text_and_forecast(
     base_rate = max(-0.05, min(0.18, base_cagr + text_rate_delta))
     optimistic_rate = max(-0.03, min(0.20, base_cagr + text_rate_delta + 0.012))
 
-    conservative_price = starting_price * ((1.0 + conservative_rate) ** years)
-    base_price = starting_price * ((1.0 + base_rate) ** years)
-    optimistic_price = starting_price * ((1.0 + optimistic_rate) ** years)
+    conservative_price = automatic_price * ((1.0 + conservative_rate) ** years)
+    base_price = automatic_price * ((1.0 + base_rate) ** years)
+    optimistic_price = automatic_price * ((1.0 + optimistic_rate) ** years)
 
-    pct_change_base = ((base_price - starting_price) / starting_price) * 100.0 if starting_price > 0 else 0.0
+    pct_change_base = ((base_price - automatic_price) / automatic_price) * 100.0 if automatic_price > 0 else 0.0
+    exceeds_realistic_cap = base_price >= realistic_ceiling
 
     if base_rate > 0.005:
         direction = "HIGH (Price Expected to Rise)"
         short_verdict = "HIGH"
         signal_class = "signal-rise"
         summary = (
-            f"Projected to rise from {format_naira(starting_price)} to "
+            f"Automatically projected from {format_naira(automatic_price)} to "
             f"{format_naira(base_price)} ({pct_change_base:+.1f}%) by {target_year} "
-            f"under the base estimate ({base_rate * 100:.1f}% annualized rate)."
+            f"at a {base_rate * 100:.1f}% annualized base rate."
         )
     elif base_rate < -0.005:
         direction = "DROP (Price Expected to Fall)"
         short_verdict = "DROP"
         signal_class = "signal-drop"
         summary = (
-            f"Projected to drop from {format_naira(starting_price)} to "
+            f"Automatically projected from {format_naira(automatic_price)} to "
             f"{format_naira(base_price)} ({pct_change_base:+.1f}%) by {target_year} "
-            f"under the base estimate ({base_rate * 100:.1f}% annualized rate)."
+            f"at a {base_rate * 100:.1f}% annualized base rate."
         )
     else:
         direction = "STEADY / FLAT"
         short_verdict = "STEADY"
         signal_class = "signal-neutral"
         summary = (
-            f"Projected to remain steady near {format_naira(base_price)} ({pct_change_base:+.1f}%) "
-            f"by {target_year} under the base estimate ({base_rate * 100:.1f}% annualized rate)."
+            f"Automatically projected to stay near {format_naira(base_price)} ({pct_change_base:+.1f}%) "
+            f"by {target_year} at a {base_rate * 100:.1f}% annualized base rate."
         )
+
+    if exceeds_realistic_cap:
+        cap_warning = (
+            f"Warning: {format_naira(base_price)} by {target_year} exceeds the {format_naira(realistic_ceiling)} "
+            f"reachability threshold—price is unlikely to reach that extreme level by {target_year}."
+        )
+    else:
+        cap_warning = ""
 
     return {
         "years": years,
@@ -431,16 +427,18 @@ def analyze_user_text_and_forecast(
         "optimistic_price": optimistic_price,
         "pct_change_base": pct_change_base,
         "matched_factors": matched_factors,
+        "exceeds_realistic_cap": exceeds_realistic_cap,
+        "cap_warning": cap_warning,
     }
 
 
 def answer_advisor_question(question: str, place_label: str, state_name: str, forecast_info: dict) -> str:
     q = (question or "").strip()
     if not q:
-        return "Enter a question about location pricing, community tiers, or future projections."
+        return "Enter a question about automatic location pricing, community tiers, or future projections."
     return (
         f"For {place_label} in {state_name} over {forecast_info['years']} years (to {2026 + forecast_info['years']}), "
-        f"the projected direction is {forecast_info['direction']} with a base estimate of "
+        f"the automatic direction is {forecast_info['direction']} with a base estimate of "
         f"{format_naira(forecast_info['base_price'])} (conservative: {format_naira(forecast_info['conservative_price'])}, "
         f"optimistic: {format_naira(forecast_info['optimistic_price'])}). "
         f"These figures are modeled estimates, not guarantees."
@@ -461,8 +459,8 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### Property Advisor")
     advisor_prompt = st.text_area(
-        "Ask about city vs. community pricing or future outlook",
-        placeholder="Example: Compare Asokoro vs. Lugbe land value by 2040.",
+        "Ask about automatic prices or future outlook",
+        placeholder="Example: How does Asokoro or Banana Island look by 2040?",
         height=90,
     )
     ask_clicked = st.button("Run Advisor", use_container_width=True)
@@ -471,21 +469,21 @@ with st.sidebar:
 st.markdown(
     """
     <div class="main-header">
-        <h1>Nigeria Property Valuation &amp; Long-Term Forecast Advisor</h1>
-        <p>Nationwide valuation across all 36 states, FCT, major cities, and local communities with red-dot mapping and balanced HIGH/DROP forecasting.</p>
+        <h1>Nigeria Property Valuation &amp; Automatic Future Forecast Advisor</h1>
+        <p>Automatic current and future property pricing across all 36 states, FCT, major cities, and local communities with red-dot mapping and HIGH/DROP signals.</p>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-# Location, community tier, and target year inputs
-st.markdown("### Location, Community Tier & Future Price Forecast")
-c_loc1, c_loc2, c_loc3 = st.columns([1.2, 1.0, 1.5])
+# Location, community tier, target year, and market drivers
+st.markdown("### Location, Community Tier & Automatic Future Forecast")
+c_loc1, c_loc2, c_loc3, c_loc4 = st.columns([1.3, 1.0, 1.3, 0.8])
 with c_loc1:
     typed_place = st.text_input(
         "Type Place, District, or Community Name",
         value="Asokoro",
-        placeholder="e.g., Asokoro, Gwarinpa, Lugbe, Ikoyi, Lekki, GRA...",
+        placeholder="e.g., Asokoro, Maitama, Banana Island, Lugbe...",
     )
 with c_loc2:
     chosen_state = st.selectbox(
@@ -499,6 +497,14 @@ with c_loc3:
         tier_options,
         index=0,
     )
+with c_loc4:
+    target_year = st.number_input(
+        "Target Year",
+        min_value=2027,
+        max_value=2100,
+        value=2040,
+        step=1,
+    )
 
 loc_profile = resolve_location_profile(
     place_name=typed_place,
@@ -507,41 +513,18 @@ loc_profile = resolve_location_profile(
     property_multiplier=prop_mult,
 )
 
-# Auto-sync starting price when location/state/tier/property changes
-location_signature = f"{typed_place.strip().lower()}|{chosen_state}|{chosen_tier}|{selected_property}"
-if st.session_state.get("last_loc_sig") != location_signature:
-    st.session_state["last_loc_sig"] = location_signature
-    st.session_state["starting_price_input"] = loc_profile["estimated_now"]
+user_thesis = st.text_input(
+    "Market condition note (defaults to current state market profile if left as-is)",
+    value=loc_profile["market_note"],
+    placeholder="Type market drivers such as infrastructure and demand, or flooding, insecurity, and price drop...",
+)
 
-c_val1, c_val2, c_val3 = st.columns([1.1, 0.8, 1.8])
-with c_val1:
-    starting_amount = st.number_input(
-        "Current Market Price Today (Naira)",
-        min_value=1_000_000.0,
-        max_value=20_000_000_000.0,
-        step=5_000_000.0,
-        key="starting_price_input",
-    )
-with c_val2:
-    target_year = st.number_input(
-        "Target Forecast Year",
-        min_value=2027,
-        max_value=2100,
-        value=2040,
-        step=1,
-    )
-with c_val3:
-    user_thesis = st.text_input(
-        "Type market conditions or risk factors (optional)",
-        value="Steady urban demand and prime land scarcity",
-        placeholder="Type factors such as infrastructure and demand, or flooding, insecurity, and price drop...",
-    )
-
+automatic_price = loc_profile["automatic_price"]
 display_place_name = typed_place.strip() if typed_place.strip() else chosen_state
 
-forecast = analyze_user_text_and_forecast(
-    user_text=user_thesis,
-    starting_price=starting_amount,
+forecast = analyze_automatic_forecast(
+    market_text=user_thesis,
+    automatic_price=automatic_price,
     base_cagr=float(loc_profile["effective_cagr"]),
     target_year=int(target_year),
 )
@@ -557,10 +540,21 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-if forecast["matched_factors"]:
-    st.caption(f"Detected text signals: {', '.join(forecast['matched_factors'])}")
+if forecast["exceeds_realistic_cap"]:
+    st.markdown(
+        f"""
+        <div class="signal-drop" style="margin-top: 10px;">
+            <div>Unreachable / Overstretched {target_year} Target Alert</div>
+            <div style="font-weight: 400; margin-top: 4px;">{forecast['cap_warning']}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-# Red dot map + future value summary side by side
+if forecast["matched_factors"]:
+    st.caption(f"Detected market signals: {', '.join(forecast['matched_factors'])}")
+
+# Red dot map + automatic future value summary side by side
 map_col, info_col = st.columns([1.65, 1.0])
 
 with map_col:
@@ -574,7 +568,7 @@ with map_col:
                 "lat": loc_profile["lat"],
                 "lon": loc_profile["lon"],
                 "verdict": forecast["short_verdict"],
-                "current_price": format_naira(starting_amount),
+                "auto_price": format_naira(automatic_price),
                 "projected_price": format_naira(forecast["base_price"]),
             }
         ]
@@ -606,6 +600,22 @@ with map_col:
         auto_highlight=True,
     )
 
+    core_color = [255, 0, 45, 255] if forecast["exceeds_realistic_cap"] else [153, 27, 27, 255]
+
+    center_core_layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=pin_df,
+        get_position="[lon, lat]",
+        get_color=core_color,
+        get_radius=8000,
+        radius_min_pixels=6,
+        radius_max_pixels=14,
+        stroked=True,
+        get_line_color="[255, 255, 255, 255]",
+        line_width_min_pixels=1.5,
+        pickable=False,
+    )
+
     view_state = pdk.ViewState(
         latitude=loc_profile["lat"],
         longitude=loc_profile["lon"],
@@ -614,14 +624,14 @@ with map_col:
     )
 
     deck = pdk.Deck(
-        layers=[outer_ring_layer, red_dot_layer],
+        layers=[outer_ring_layer, red_dot_layer, center_core_layer],
         initial_view_state=view_state,
         map_style="light",
         tooltip={
             "html": (
                 "<b>Place:</b> {place} ({tier})<br/>"
                 "<b>State:</b> {state}<br/>"
-                "<b>Today:</b> {current_price}<br/>"
+                "<b>Automatic Price Today:</b> {auto_price}<br/>"
                 "<b>Direction:</b> {verdict}<br/>"
                 "<b>Projected:</b> {projected_price}"
             ),
@@ -634,13 +644,13 @@ with map_col:
     )
 
 with info_col:
-    st.markdown(f"#### {target_year} Valuation Scenarios")
+    st.markdown(f"#### {target_year} Automatic Scenarios")
     st.markdown(
         f"""
         <div class="metric-card">
             <div class="metric-label">Conservative ({target_year})</div>
             <div class="metric-value">{format_naira(forecast['conservative_price'])}</div>
-            <div class="metric-sub">Lower-bound scenario</div>
+            <div class="metric-sub">Lower-bound automatic estimate</div>
         </div>
         <div class="metric-card">
             <div class="metric-label">Base Estimate ({target_year})</div>
@@ -650,20 +660,20 @@ with info_col:
         <div class="metric-card">
             <div class="metric-label">Optimistic ({target_year})</div>
             <div class="metric-value">{format_naira(forecast['optimistic_price'])}</div>
-            <div class="metric-sub">Upper-bound scenario</div>
+            <div class="metric-sub">Upper-bound automatic estimate</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-# Summary metrics for the selected community tier
+# Automatic benchmark metrics for the selected community tier
 c1, c2, c3, c4 = st.columns(4)
 with c1:
     st.markdown(
         f"""
         <div class="metric-card">
-            <div class="metric-label">Community Benchmark Today</div>
-            <div class="metric-value">{format_naira(loc_profile['estimated_now'])}</div>
+            <div class="metric-label">Automatic Price Today</div>
+            <div class="metric-value">{format_naira(automatic_price)}</div>
             <div class="metric-sub">{loc_profile['tier_label']}</div>
         </div>
         """,
@@ -707,7 +717,7 @@ if ask_clicked:
     st.info(answer_advisor_question(advisor_prompt, display_place_name, chosen_state, forecast))
 
 # Nationwide summary table across all 36 states + FCT for the chosen community tier
-st.markdown(f"### All 36 States & FCT Comparison ({COMMUNITY_TIERS[chosen_tier]['label']})")
+st.markdown(f"### All 36 States & FCT Automatic Forecast ({COMMUNITY_TIERS[chosen_tier]['label']})")
 region_filter = st.selectbox(
     "Filter Table by Geopolitical Zone",
     ["All Regions", "North Central", "North East", "North West", "South East", "South South", "South West"],
@@ -718,13 +728,13 @@ tier_mult = COMMUNITY_TIERS[chosen_tier]["price_mult"]
 tier_cagr_bonus = COMMUNITY_TIERS[chosen_tier]["cagr_bonus"]
 
 summary_rows = []
-for state_name, region, base_price, base_cagr, base_yield, coverage, _, _ in NIGERIA_LOCATIONS:
+for state_name, region, base_price, base_cagr, base_yield, coverage, _, _, state_note in NIGERIA_LOCATIONS:
     if region_filter != "All Regions" and region != region_filter:
         continue
-    now_est = round(base_price * tier_mult * prop_mult, -5)
-    fc = analyze_user_text_and_forecast(
-        user_text=user_thesis,
-        starting_price=float(now_est),
+    auto_now = round(base_price * tier_mult * prop_mult, -5)
+    fc = analyze_automatic_forecast(
+        market_text=state_note,
+        automatic_price=float(auto_now),
         base_cagr=float(base_cagr + tier_cagr_bonus),
         target_year=int(target_year),
     )
@@ -733,8 +743,8 @@ for state_name, region, base_price, base_cagr, base_yield, coverage, _, _ in NIG
             "State / FCT": state_name,
             "Region": region,
             "Community Tier": COMMUNITY_TIERS[chosen_tier]["label"],
-            "Current Est. (N)": now_est,
-            f"Projected {target_year} (N)": round(fc["base_price"], -5),
+            "Automatic Price Today (N)": auto_now,
+            f"Automatic {target_year} (N)": round(fc["base_price"], -5),
             "Direction": fc["short_verdict"],
             "Coverage": coverage,
         }
@@ -745,7 +755,7 @@ st.dataframe(pd.DataFrame(summary_rows), use_container_width=True, hide_index=Tr
 st.markdown(
     """
     <div class="disclaimer-box">
-        Valuations and future projections reflect city-core, mid-tier, and satellite-community benchmarks across Nigeria's 36 states and FCT. Future prices and HIGH/DROP signals are scenario-based estimates for planning and defense discussion, not guarantees.
+        All current and future prices are generated automatically from location baselines, community tiers, property profiles, and market assumptions across all 36 states and the FCT. They are modeled estimates for planning and presentation, not financial guarantees.
     </div>
     """,
     unsafe_allow_html=True,
