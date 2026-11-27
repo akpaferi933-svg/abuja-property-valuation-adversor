@@ -1,4 +1,5 @@
 import hashlib
+import math
 import re
 import pandas as pd
 import pydeck as pdk
@@ -6,12 +7,14 @@ import streamlit as st
 
 from backend import (
     clear_saved_analyses_db,
+    fetch_app_settings,
     fetch_market_overrides,
     fetch_moderator_logs,
     fetch_saved_analyses,
     init_db,
     log_moderator_change_if_new,
     save_analysis_record,
+    save_app_settings,
     upsert_market_override,
 )
 
@@ -19,7 +22,9 @@ st.set_page_config(
     page_title="Nigeria Property Valuation & Forecast Advisor",
     layout="wide",
 )
+
 init_db()
+app_settings = fetch_app_settings()
 
 st.markdown(
     """
@@ -47,7 +52,7 @@ st.markdown(
             border: 1px solid rgba(255, 255, 255, 0.16);
             border-radius: 10px;
             padding: 14px 16px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
         .sidebar-brand-title {
             font-size: 1.02rem;
@@ -111,7 +116,7 @@ st.markdown(
             margin-bottom: 4px;
         }
         .kpi-value {
-            font-size: 1.38rem;
+            font-size: 1.35rem;
             font-weight: 700;
             color: #0e241b;
         }
@@ -285,6 +290,12 @@ PROPERTY_MULTIPLIERS = {
     "3-Bedroom Detached Bungalow": 0.85,
 }
 
+MARKET_REGIMES = {
+    "Expansion Cycle (Rising Demand & Cost Pressure)": {"drift_bonus": 0.012, "phase_label": "Expansion"},
+    "Consolidation / Steady Market (Sideways / Stabilizing)": {"drift_bonus": 0.000, "phase_label": "Steady"},
+    "Correction / Pullback Cycle (Cooling / Drop Pressure)": {"drift_bonus": -0.018, "phase_label": "Pullback"},
+}
+
 POSITIVE_TERMS = {
     "high": 0.014, "rise": 0.014, "rising": 0.014, "appreciate": 0.016,
     "appreciation": 0.016, "grow": 0.013, "growth": 0.013, "boom": 0.020,
@@ -310,6 +321,8 @@ def resolve_location_profile(place_name: str, state_name: str, tier_name: str, p
     state_meta = next(item for item in NIGERIA_LOCATIONS if item[0] == state_name)
     tier_meta = COMMUNITY_TIERS[tier_name]
     prop_mult = PROPERTY_MULTIPLIERS.get(property_type, 1.0)
+    overrides = fetch_market_overrides()
+    override_key = f"{state_name.strip().lower()}::{clean_place}"
 
     matched = None
     for key, val in KNOWN_AREAS.items():
@@ -317,7 +330,21 @@ def resolve_location_profile(place_name: str, state_name: str, tier_name: str, p
             matched = val
             break
 
-    if matched:
+    base_lat, base_lon = float(state_meta[6]), float(state_meta[7])
+    if clean_place:
+        digest = hashlib.md5(f"{state_name}::{clean_place}".encode("utf-8")).hexdigest()
+        calc_lat = round(base_lat + (((int(digest[:8], 16) / 0xFFFFFFFF) - 0.5) * 0.22), 5)
+        calc_lon = round(base_lon + (((int(digest[8:16], 16) / 0xFFFFFFFF) - 0.5) * 0.22), 5)
+    else:
+        calc_lat, calc_lon = base_lat, base_lon
+
+    if override_key in overrides:
+        ov = overrides[override_key]
+        auto_price = round(ov["base_price"] * prop_mult, -5)
+        effective_cagr = ov["base_cagr"]
+        resolved_tier = matched[5] if matched else tier_name
+        lat, lon = (matched[3], matched[4]) if matched else (calc_lat, calc_lon)
+    elif matched:
         _, area_price, area_cagr, lat, lon, resolved_tier = matched
         auto_price = round(area_price * prop_mult, -5)
         effective_cagr = area_cagr
@@ -325,13 +352,7 @@ def resolve_location_profile(place_name: str, state_name: str, tier_name: str, p
         auto_price = round(state_meta[2] * tier_meta["price_mult"] * prop_mult, -5)
         effective_cagr = state_meta[3] + tier_meta["cagr_bonus"]
         resolved_tier = tier_name
-        base_lat, base_lon = float(state_meta[6]), float(state_meta[7])
-        if clean_place:
-            digest = hashlib.md5(f"{state_name}::{clean_place}".encode("utf-8")).hexdigest()
-            lat = round(base_lat + (((int(digest[:8], 16) / 0xFFFFFFFF) - 0.5) * 0.22), 5)
-            lon = round(base_lon + (((int(digest[8:16], 16) / 0xFFFFFFFF) - 0.5) * 0.22), 5)
-        else:
-            lat, lon = base_lat, base_lon
+        lat, lon = calc_lat, calc_lon
 
     return {
         "automatic_price": float(max(2_000_000, auto_price)),
@@ -346,11 +367,13 @@ def resolve_location_profile(place_name: str, state_name: str, tier_name: str, p
     }
 
 
-def compute_forecast(
+def compute_cycle_forecast(
     market_text: str,
     automatic_price: float,
     base_cagr: float,
     target_year: int,
+    regime_name: str,
+    cycle_volatility: float,
     current_year: int = 2026,
     realistic_ceiling: float = 10_000_000_000.0,
 ) -> dict:
@@ -364,51 +387,75 @@ def compute_forecast(
             delta += NEGATIVE_TERMS[tok]
     delta = max(-0.080, min(0.060, delta))
 
-    c_rate = max(-0.06, min(0.16, base_cagr + delta - 0.012))
-    b_rate = max(-0.05, min(0.18, base_cagr + delta))
-    o_rate = max(-0.03, min(0.20, base_cagr + delta + 0.012))
+    regime_bonus = MARKET_REGIMES.get(regime_name, MARKET_REGIMES["Expansion Cycle (Rising Demand & Cost Pressure)"])["drift_bonus"]
+    effective_drift = max(-0.045, min(0.14, base_cagr + delta + regime_bonus))
 
-    c_price = automatic_price * ((1.0 + c_rate) ** years)
-    b_price = automatic_price * ((1.0 + b_rate) ** years)
-    o_price = automatic_price * ((1.0 + o_rate) ** years)
-
-    pct_change = ((b_price - automatic_price) / automatic_price) * 100.0 if automatic_price else 0.0
-    exceeds_cap = b_price >= realistic_ceiling
-
-    if b_rate > 0.005:
-        verdict = "HIGH"
-        direction_text = "HIGH (Price Expected to Rise)"
-        signal_cls = "signal-rise"
-    elif b_rate < -0.005:
-        verdict = "DROP"
-        direction_text = "DROP (Price Expected to Fall)"
-        signal_cls = "signal-drop"
-    else:
-        verdict = "STEADY"
-        direction_text = "STEADY / FLAT"
-        signal_cls = "signal-steady"
-
+    # Cycle wave captures rising stretches, steady plateaus, and pullback waves over time
     series_rows = []
+    b_val = float(automatic_price)
+    c_val = float(automatic_price)
+    o_val = float(automatic_price)
+    phases = []
+
     for yr in range(current_year, target_year + 1):
         dt = yr - current_year
+        if dt == 0:
+            phase = "Current Baseline"
+        else:
+            wave = math.sin((dt * 2.0 * math.pi) / 5.0)
+            if wave > 0.35:
+                phase = "Upward Wave"
+            elif wave < -0.35:
+                phase = "Pullback / Cool Wave"
+            else:
+                phase = "Steady Consolidation"
+
+            step_wave = cycle_volatility * math.sin((dt * 2.0 * math.pi) / 5.0)
+            b_step = max(-0.06, min(0.18, effective_drift + step_wave))
+            c_step = max(-0.07, min(0.15, b_step - 0.012))
+            o_step = max(-0.04, min(0.20, b_step + 0.012))
+
+            b_val = max(1_000_000.0, b_val * (1.0 + b_step))
+            c_val = max(1_000_000.0, c_val * (1.0 + c_step))
+            o_val = max(1_000_000.0, o_val * (1.0 + o_step))
+
+        phases.append(phase)
         series_rows.append(
             {
                 "Year": yr,
-                "Conservative": round(automatic_price * ((1.0 + c_rate) ** dt), 0),
-                "Base Estimate": round(automatic_price * ((1.0 + b_rate) ** dt), 0),
-                "Optimistic": round(automatic_price * ((1.0 + o_rate) ** dt), 0),
+                "Conservative": round(c_val, 0),
+                "Base Estimate": round(b_val, 0),
+                "Optimistic": round(o_val, 0),
             }
         )
+
+    pct_change = ((b_val - automatic_price) / automatic_price) * 100.0 if automatic_price else 0.0
+    exceeds_cap = b_val >= realistic_ceiling
+    current_phase = phases[-1] if phases else "Current Baseline"
+
+    if effective_drift > 0.005:
+        verdict = "HIGH"
+        direction_text = f"HIGH (Upward Trend — {current_phase})"
+        signal_cls = "signal-rise"
+    elif effective_drift < -0.005:
+        verdict = "DROP"
+        direction_text = f"DROP (Downward Pressure — {current_phase})"
+        signal_cls = "signal-drop"
+    else:
+        verdict = "STEADY"
+        direction_text = f"STEADY ({current_phase})"
+        signal_cls = "signal-steady"
 
     return {
         "years": years,
         "verdict": verdict,
         "direction_text": direction_text,
         "signal_cls": signal_cls,
-        "base_rate": b_rate,
-        "conservative_price": c_price,
-        "base_price": b_price,
-        "optimistic_price": o_price,
+        "current_phase": current_phase,
+        "base_rate": effective_drift,
+        "conservative_price": c_val,
+        "base_price": b_val,
+        "optimistic_price": o_val,
         "pct_change": pct_change,
         "exceeds_cap": exceeds_cap,
         "series_df": pd.DataFrame(series_rows).set_index("Year"),
@@ -516,6 +563,7 @@ def render_map(place_label: str, state_name: str, profile: dict, forecast: dict,
 all_states = [s[0] for s in NIGERIA_LOCATIONS]
 tier_names = list(COMMUNITY_TIERS.keys())
 prop_names = list(PROPERTY_MULTIPLIERS.keys())
+regime_names = list(MARKET_REGIMES.keys())
 
 if "state_choice" not in st.session_state:
     st.session_state["state_choice"] = "FCT Abuja"
@@ -526,24 +574,23 @@ if "prop_choice" not in st.session_state:
 if "tier_choice" not in st.session_state:
     st.session_state["tier_choice"] = tier_names[0]
 if "year_choice" not in st.session_state:
-    st.session_state["year_choice"] = 2040
-if "saved_analyses" not in st.session_state:
-    st.session_state["saved_analyses"] = []
-if "moderator_log" not in st.session_state:
-    st.session_state["moderator_log"] = []
+    st.session_state["year_choice"] = int(app_settings.get("default_target_year", 2040))
+if "regime_choice" not in st.session_state:
+    saved_regime = app_settings.get("market_regime", regime_names[0])
+    st.session_state["regime_choice"] = saved_regime if saved_regime in regime_names else regime_names[0]
 
 with st.sidebar:
     st.markdown(
-        """
+        f"""
         <div class="sidebar-brand">
-            <div class="sidebar-brand-title">Nigeria Property Valuation &amp; Forecast Advisor</div>
-            <div class="sidebar-brand-sub">Property Intelligence Platform</div>
+            <div class="sidebar-brand-title">{app_settings.get('app_name', 'Nigeria Property Advisor')}</div>
+            <div class="sidebar-brand-sub">{app_settings.get('operator_name', 'Moderator')} - {app_settings.get('operator_role', 'Lead')}</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
     nav_section = st.radio(
-        "Navigation",
+        "App Navigation",
         [
             "Dashboard",
             "Estimate Property",
@@ -551,6 +598,7 @@ with st.sidebar:
             "Location Map",
             "Compare Locations",
             "Saved Analysis",
+            "Settings & Profile",
         ],
         index=0,
     )
@@ -559,14 +607,14 @@ st.markdown(
     """
     <div class="hero-banner">
         <h1>Nigeria Property Valuation &amp; Forecast Advisor</h1>
-        <p>Estimate. Forecast. Invest Smarter — Automatic current prices, multi-year future forecasts, and market intelligence across all 36 states and the FCT.</p>
+        <p>Market-cycle tracking, automatic current pricing, future forecasting, and backend audit logs across all 36 states and the FCT.</p>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-st.markdown('<div class="card-panel"><h4>Quick Property Estimate &amp; Future Forecast</h4>', unsafe_allow_html=True)
-q1, q2, q3, q4, q5 = st.columns([1.1, 1.1, 1.25, 1.0, 0.75])
+st.markdown('<div class="card-panel"><h4>Live Market Controls &amp; Target Horizon</h4>', unsafe_allow_html=True)
+q1, q2, q3, q4, q5, q6 = st.columns([1.05, 1.0, 1.15, 1.0, 1.25, 0.75])
 with q1:
     selected_state = st.selectbox("State / FCT", all_states, key="state_choice")
 with q2:
@@ -576,52 +624,48 @@ with q3:
 with q4:
     selected_tier = st.selectbox("Market Tier", tier_names, key="tier_choice")
 with q5:
-    target_year = st.number_input("Forecast Year", min_value=2027, max_value=2100, step=1, key="year_choice")
+    selected_regime = st.selectbox("Market Cycle Regime", regime_names, key="regime_choice")
+with q6:
+    target_year = st.number_input("Target Year", min_value=2027, max_value=2100, step=1, key="year_choice")
 st.markdown("</div>", unsafe_allow_html=True)
 
 profile = resolve_location_profile(typed_area, selected_state, selected_tier, selected_prop)
 auto_price = profile["automatic_price"]
 place_label = typed_area.strip() if typed_area.strip() else selected_state
-forecast = compute_forecast(profile["market_note"], auto_price, profile["effective_cagr"], int(target_year))
+ceiling_val = float(app_settings.get("reachability_ceiling", 10_000_000_000.0))
+volatility_val = float(app_settings.get("cycle_volatility", 0.018))
+
+forecast = compute_cycle_forecast(
+    market_text=profile["market_note"],
+    automatic_price=auto_price,
+    base_cagr=profile["effective_cagr"],
+    target_year=int(target_year),
+    regime_name=selected_regime,
+    cycle_volatility=volatility_val,
+    realistic_ceiling=ceiling_val,
+)
 
 snapshot_key = (
-    f"{place_label}|{selected_state}|{profile['tier']}|{selected_prop}|"
+    f"{place_label}|{selected_state}|{profile['tier']}|{selected_prop}|{selected_regime}|"
     f"{int(target_year)}|{round(auto_price, 0)}|{round(forecast['base_price'], 0)}|{forecast['verdict']}"
 )
-if st.session_state.get("last_snapshot_key") != snapshot_key:
-    prev_val = st.session_state.get("last_base_price")
-    if prev_val is not None and prev_val > 0:
-        shift_pct = ((forecast["base_price"] - prev_val) / prev_val) * 100.0
-        if shift_pct > 0.5:
-            market_change = f"SHIFT UP ({shift_pct:+.1f}%)"
-        elif shift_pct < -0.5:
-            market_change = f"SHIFT DOWN ({shift_pct:+.1f}%)"
-        else:
-            market_change = "STEADY (0.0%)"
-    else:
-        market_change = f"ACTIVE ({forecast['verdict']})"
-
-    st.session_state["last_snapshot_key"] = snapshot_key
-    st.session_state["last_base_price"] = forecast["base_price"]
-    st.session_state["moderator_log"].insert(
-        0,
-        {
-            "Location": f"{place_label}, {selected_state}",
-            "Tier": profile["tier"],
-            "Property": selected_prop,
-            "Target Year": int(target_year),
-            "Auto Price Today": format_naira(auto_price),
-            f"Projected {target_year}": format_naira(forecast["base_price"]),
-            "Direction": forecast["verdict"],
-            "Market Change": market_change,
-        },
-    )
-    st.session_state["moderator_log"] = st.session_state["moderator_log"][:25]
+log_moderator_change_if_new(
+    {
+        "snapshot_key": snapshot_key,
+        "location": f"{place_label}, {selected_state}",
+        "tier": profile["tier"],
+        "property_type": selected_prop,
+        "target_year": int(target_year),
+        "auto_price": auto_price,
+        "projected_price": forecast["base_price"],
+        "direction": forecast["verdict"],
+    }
+)
 
 st.markdown(
     f"""
     <div class="{forecast['signal_cls']}">
-        {target_year} Direction for {place_label}, {selected_state} ({profile['tier']}): {forecast['direction_text']} —
+        {target_year} Signal for {place_label}, {selected_state} ({profile['tier']}): {forecast['direction_text']} —
         Automatic Price Today: {format_naira(auto_price)} to {format_naira(forecast['base_price'])} ({forecast['pct_change']:+.1f}%).
     </div>
     """,
@@ -632,7 +676,7 @@ if forecast["exceeds_cap"]:
     st.markdown(
         f"""
         <div class="signal-drop">
-            Overstretched {target_year} Target Alert: {format_naira(forecast['base_price'])} exceeds the N10,000,000,000 reachability cap for {place_label} by {target_year}.
+            Overstretched {target_year} Target Alert: {format_naira(forecast['base_price'])} exceeds the {format_naira(ceiling_val)} reachability ceiling for {place_label} by {target_year}.
         </div>
         """,
         unsafe_allow_html=True,
@@ -644,9 +688,9 @@ if nav_section == "Dashboard":
         st.markdown(
             f"""
             <div class="kpi-card">
-                <div class="kpi-label">Average Price ({profile['tier']})</div>
+                <div class="kpi-label">Automatic Price Today</div>
                 <div class="kpi-value">{format_naira(auto_price)}</div>
-                <div class="kpi-sub">{forecast['base_rate'] * 100:+.1f}% annualized rate</div>
+                <div class="kpi-sub">{profile['tier']} - {selected_state}</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -655,7 +699,7 @@ if nav_section == "Dashboard":
         st.markdown(
             f"""
             <div class="kpi-card">
-                <div class="kpi-label">Est. Rental Yield</div>
+                <div class="kpi-label">Est. Gross Rental Yield</div>
                 <div class="kpi-value">{profile['gross_yield'] * 100:.1f}%</div>
                 <div class="kpi-sub-muted">Annual yield benchmark</div>
             </div>
@@ -666,9 +710,9 @@ if nav_section == "Dashboard":
         st.markdown(
             f"""
             <div class="kpi-card">
-                <div class="kpi-label">Market Tier &amp; Coverage</div>
-                <div class="kpi-value">{profile['coverage']}</div>
-                <div class="kpi-sub-muted">36 States + FCT</div>
+                <div class="kpi-label">Active Cycle Phase</div>
+                <div class="kpi-value">{forecast['current_phase']}</div>
+                <div class="kpi-sub-muted">{forecast['base_rate'] * 100:+.1f}% drift rate</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -677,9 +721,9 @@ if nav_section == "Dashboard":
         st.markdown(
             f"""
             <div class="kpi-card">
-                <div class="kpi-label">Top Growth / Horizon</div>
-                <div class="kpi-value">{place_label} ({target_year})</div>
-                <div class="kpi-sub">{forecast['verdict']} signal ({forecast['years']} yrs)</div>
+                <div class="kpi-label">Projected {target_year} (Base)</div>
+                <div class="kpi-value">{format_naira(forecast['base_price'])}</div>
+                <div class="kpi-sub">{forecast['verdict']} ({forecast['pct_change']:+.1f}%)</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -687,11 +731,11 @@ if nav_section == "Dashboard":
 
     left_col, right_col = st.columns([1.2, 1.0])
     with left_col:
-        st.markdown('<div class="card-panel"><h4>Nigeria Property Price Trend &amp; Forecast</h4>', unsafe_allow_html=True)
+        st.markdown('<div class="card-panel"><h4>Market Cycle Price Trajectory</h4>', unsafe_allow_html=True)
         st.line_chart(forecast["series_df"], height=260)
         st.markdown("</div>", unsafe_allow_html=True)
 
-        st.markdown('<div class="card-panel"><h4>Top Growth Locations (YoY Benchmark)</h4>', unsafe_allow_html=True)
+        st.markdown('<div class="card-panel"><h4>Top Growth Locations (Baseline Benchmark)</h4>', unsafe_allow_html=True)
         top_locs = sorted(NIGERIA_LOCATIONS, key=lambda x: x[3], reverse=True)[:5]
         for st_name, reg, b_price, b_cagr, *_ in top_locs:
             st.markdown(
@@ -709,29 +753,29 @@ if nav_section == "Dashboard":
         st.markdown(f'<div class="card-panel"><h4>Price by Location — {place_label}, {selected_state}</h4>', unsafe_allow_html=True)
         render_map(place_label, selected_state, profile, forecast, auto_price, height=390)
         st.caption(f"Current (Auto): {format_naira(auto_price)} | {target_year} Base: {format_naira(forecast['base_price'])} | Signal: {forecast['verdict']}")
-        if st.button("Save Current Analysis", use_container_width=True):
-            st.session_state["saved_analyses"].append(
+        if st.button("Save Analysis to Backend", use_container_width=True):
+            save_analysis_record(
                 {
                     "Location": f"{place_label}, {selected_state}",
                     "Tier": profile["tier"],
                     "Property Type": selected_prop,
                     "Current Price (Auto)": auto_price,
-                    "Target Year": target_year,
+                    "Target Year": int(target_year),
                     "Projected Base": round(forecast["base_price"], -5),
                     "Direction": forecast["verdict"],
                 }
             )
-            st.success(f"Saved {place_label}, {selected_state} ({target_year}) to Saved Analysis.")
+            st.success(f"Saved {place_label}, {selected_state} ({target_year}) to database.")
         st.markdown("</div>", unsafe_allow_html=True)
 
 elif nav_section == "Estimate Property":
-    st.markdown('<div class="card-panel"><h4>Property Price Estimate</h4>', unsafe_allow_html=True)
+    st.markdown('<div class="card-panel"><h4>Automatic Property Price Estimate</h4>', unsafe_allow_html=True)
     e1, e2, e3 = st.columns(3)
     with e1:
         st.markdown(
             f"""
             <div class="kpi-card">
-                <div class="kpi-label">Estimated Property Value (Current)</div>
+                <div class="kpi-label">Estimated Current Value</div>
                 <div class="kpi-value">{format_naira(auto_price)}</div>
                 <div class="kpi-sub">{profile['tier']} - {place_label}, {selected_state}</div>
             </div>
@@ -753,7 +797,7 @@ elif nav_section == "Estimate Property":
         st.markdown(
             f"""
             <div class="kpi-card">
-                <div class="kpi-label">Confidence Level</div>
+                <div class="kpi-label">Data Coverage &amp; Region</div>
                 <div class="kpi-value">{profile['coverage']}</div>
                 <div class="kpi-sub-muted">{profile['region']} Region</div>
             </div>
@@ -781,17 +825,17 @@ elif nav_section == "Forecast Value":
             <div class="kpi-card">
                 <div class="kpi-label">Selected Scenario ({scenario_choice} - {target_year})</div>
                 <div class="kpi-value">{format_naira(chosen_val)}</div>
-                <div class="kpi-sub">{forecast['verdict']} signal over {forecast['years']} years</div>
+                <div class="kpi-sub">{forecast['verdict']} ({forecast['current_phase']})</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-label">Optimistic ({target_year})</div>
                 <div class="kpi-value">{format_naira(forecast['optimistic_price'])}</div>
-                <div class="kpi-sub">Upper automatic bound</div>
+                <div class="kpi-sub">Upper cycle bound</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-label">Conservative ({target_year})</div>
                 <div class="kpi-value">{format_naira(forecast['conservative_price'])}</div>
-                <div class="kpi-sub-muted">Lower automatic bound</div>
+                <div class="kpi-sub-muted">Lower cycle bound</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -822,7 +866,15 @@ elif nav_section == "Compare Locations":
     table_rows = []
     for st_name, reg, b_price, b_cagr, b_yield, cov, _, _, note in NIGERIA_LOCATIONS:
         p_now = round(b_price * COMMUNITY_TIERS[selected_tier]["price_mult"] * PROPERTY_MULTIPLIERS[selected_prop], -5)
-        fc_row = compute_forecast(note, float(p_now), float(b_cagr + COMMUNITY_TIERS[selected_tier]["cagr_bonus"]), int(target_year))
+        fc_row = compute_cycle_forecast(
+            market_text=note,
+            automatic_price=float(p_now),
+            base_cagr=float(b_cagr + COMMUNITY_TIERS[selected_tier]["cagr_bonus"]),
+            target_year=int(target_year),
+            regime_name=selected_regime,
+            cycle_volatility=volatility_val,
+            realistic_ceiling=ceiling_val,
+        )
         table_rows.append(
             {
                 "Location": st_name,
@@ -846,9 +898,9 @@ elif nav_section == "Compare Locations":
     st.markdown("</div>", unsafe_allow_html=True)
 
 elif nav_section == "Saved Analysis":
-    st.markdown('<div class="card-panel"><h4>Saved Property Analyses</h4>', unsafe_allow_html=True)
-    if st.session_state["saved_analyses"]:
-        saved_df = pd.DataFrame(st.session_state["saved_analyses"])
+    st.markdown('<div class="card-panel"><h4>Saved Property Analyses (Database)</h4>', unsafe_allow_html=True)
+    saved_df = fetch_saved_analyses()
+    if not saved_df.empty:
         st.dataframe(saved_df, use_container_width=True, hide_index=True)
         col_s1, col_s2 = st.columns(2)
         with col_s1:
@@ -860,14 +912,57 @@ elif nav_section == "Saved Analysis":
             )
         with col_s2:
             if st.button("Clear Saved Analyses"):
-                st.session_state["saved_analyses"] = []
+                clear_saved_analyses_db()
                 st.rerun()
     else:
-        st.info("No saved analyses yet. Click 'Save Current Analysis' on the Dashboard to store properties here.")
+        st.info("No saved analyses in the database yet. Click 'Save Analysis to Backend' on the Dashboard to store properties here.")
     st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown('<div class="card-panel"><h4>Moderator Market Change &amp; Forecast Log</h4>', unsafe_allow_html=True)
-mod_df = pd.DataFrame(st.session_state["moderator_log"])
+elif nav_section == "Settings & Profile":
+    st.markdown('<div class="card-panel"><h4>Operator Profile &amp; App Settings</h4>', unsafe_allow_html=True)
+    with st.form("profile_settings_form"):
+        p1, p2 = st.columns(2)
+        with p1:
+            op_name = st.text_input("Operator / Moderator Name", value=str(app_settings.get("operator_name", "Market Moderator")))
+            op_role = st.text_input("Role / Title", value=str(app_settings.get("operator_role", "Property Intelligence Lead")))
+        with p2:
+            def_yr = st.number_input("Default Forecast Year", min_value=2027, max_value=2100, value=int(app_settings.get("default_target_year", 2040)), step=1)
+            vol_pct = st.slider("Cycle Wave Amplitude (%)", min_value=0.0, max_value=5.0, value=round(volatility_val * 100, 1), step=0.1)
+
+        if st.form_submit_button("Save Settings to Backend"):
+            save_app_settings(
+                {
+                    "operator_name": op_name.strip() or "Market Moderator",
+                    "operator_role": op_role.strip() or "Property Intelligence Lead",
+                    "default_target_year": int(def_yr),
+                    "cycle_volatility": float(vol_pct) / 100.0,
+                    "market_regime": selected_regime,
+                }
+            )
+            st.success("Profile and app settings saved to backend.")
+            st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown('<div class="card-panel"><h4>Moderator Location Baseline Override (Backend)</h4>', unsafe_allow_html=True)
+    with st.form("market_override_form"):
+        o1, o2, o3, o4 = st.columns(4)
+        with o1:
+            ov_state = st.selectbox("Override State", all_states, index=all_states.index(selected_state))
+        with o2:
+            ov_area = st.text_input("Override Area", value=place_label)
+        with o3:
+            ov_price = st.number_input("New Reference Price (Naira)", min_value=1_000_000.0, value=float(auto_price), step=5_000_000.0)
+        with o4:
+            ov_cagr = st.number_input("Annual Growth Rate (%)", min_value=-10.0, max_value=25.0, value=round(profile["effective_cagr"] * 100, 2), step=0.25)
+
+        if st.form_submit_button("Update Location Baseline"):
+            upsert_market_override(ov_state, ov_area, ov_price, ov_cagr / 100.0)
+            st.success(f"Updated backend market baseline for {ov_area}, {ov_state}.")
+            st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown('<div class="card-panel"><h4>Moderator Market Change &amp; Forecast Log (Backend)</h4>', unsafe_allow_html=True)
+mod_df = fetch_moderator_logs(limit=25)
 st.dataframe(mod_df, use_container_width=True, hide_index=True)
 st.download_button(
     label="Export Moderator Log (CSV)",
@@ -881,12 +976,12 @@ st.markdown("#### Key Platform Features")
 f1, f2, f3, f4, f5 = st.columns(5)
 with f1:
     st.markdown(
-        '<div class="feature-card"><div class="feature-title">Accurate Price Estimation</div><div class="feature-desc">Automatic market values from location and tier baselines.</div></div>',
+        '<div class="feature-card"><div class="feature-title">Automatic Pricing</div><div class="feature-desc">Calculated from 36 states + FCT, tiers, and backend overrides.</div></div>',
         unsafe_allow_html=True,
     )
 with f2:
     st.markdown(
-        '<div class="feature-card"><div class="feature-title">Flexible Forecasting</div><div class="feature-desc">Multi-scenario growth paths to any target year.</div></div>',
+        '<div class="feature-card"><div class="feature-title">Cycle Forecasting</div><div class="feature-desc">Models rising waves, steady pauses, and pullbacks to target year.</div></div>',
         unsafe_allow_html=True,
     )
 with f3:
@@ -896,19 +991,19 @@ with f3:
     )
 with f4:
     st.markdown(
-        '<div class="feature-card"><div class="feature-title">Market Insights</div><div class="feature-desc">Rental yields, HIGH/DROP signals, and moderator change log.</div></div>',
+        '<div class="feature-card"><div class="feature-title">Moderator Backend</div><div class="feature-desc">Persistent SQLite logs for market changes, saves, and settings.</div></div>',
         unsafe_allow_html=True,
     )
 with f5:
     st.markdown(
-        '<div class="feature-card"><div class="feature-title">Compare &amp; Export</div><div class="feature-desc">Side-by-side 36-state comparison and downloadable CSV reports.</div></div>',
+        '<div class="feature-card"><div class="feature-title">Compare &amp; Export</div><div class="feature-desc">Full comparison table with downloadable CSV reports.</div></div>',
         unsafe_allow_html=True,
     )
 
 st.markdown(
     """
     <div class="disclaimer-box">
-        Valuations and multi-year forecasts are automatically modeled across all 36 states and the FCT for planning and presentation purposes, not financial guarantees.
+        Market cycle regimes, valuations, and multi-year forecasts are modeled for planning and decision support across all 36 states and the FCT, not financial guarantees.
     </div>
     """,
     unsafe_allow_html=True,

@@ -1,9 +1,20 @@
 from datetime import datetime, timezone
+import json
 import sqlite3
 from pathlib import Path
 import pandas as pd
 
 DB_PATH = Path(__file__).resolve().parent / "property_advisor.db"
+
+DEFAULT_SETTINGS = {
+    "app_name": "Nigeria Property Valuation & Forecast Advisor",
+    "operator_name": "Market Moderator",
+    "operator_role": "Property Intelligence Lead",
+    "default_target_year": 2040,
+    "reachability_ceiling": 10_000_000_000.0,
+    "market_regime": "Expansion Cycle (Rising Demand & Cost Pressure)",
+    "cycle_volatility": 0.018,
+}
 
 
 def get_connection() -> sqlite3.Connection:
@@ -58,6 +69,55 @@ def init_db() -> None:
             )
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS app_settings (
+                setting_key TEXT PRIMARY KEY,
+                setting_value TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+            """
+        )
+        now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        for key, val in DEFAULT_SETTINGS.items():
+            conn.execute(
+                """
+                INSERT OR IGNORE INTO app_settings (setting_key, setting_value, updated_at)
+                VALUES (?, ?, ?)
+                """,
+                (key, json.dumps(val), now_iso),
+            )
+        conn.commit()
+
+
+def fetch_app_settings() -> dict:
+    init_db()
+    settings = dict(DEFAULT_SETTINGS)
+    with get_connection() as conn:
+        rows = conn.execute("SELECT setting_key, setting_value FROM app_settings").fetchall()
+    for row in rows:
+        try:
+            settings[row["setting_key"]] = json.loads(row["setting_value"])
+        except Exception:
+            settings[row["setting_key"]] = row["setting_value"]
+    return settings
+
+
+def save_app_settings(updates: dict) -> None:
+    init_db()
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    with get_connection() as conn:
+        for key, val in updates.items():
+            conn.execute(
+                """
+                INSERT INTO app_settings (setting_key, setting_value, updated_at)
+                VALUES (?, ?, ?)
+                ON CONFLICT(setting_key) DO UPDATE SET
+                    setting_value = excluded.setting_value,
+                    updated_at = excluded.updated_at
+                """,
+                (key, json.dumps(val), now_iso),
+            )
         conn.commit()
 
 
