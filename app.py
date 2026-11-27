@@ -1,8 +1,8 @@
-import math
+import hashlib
 import os
 import re
-import numpy as np
 import pandas as pd
+import pydeck as pdk
 import streamlit as st
 
 st.set_page_config(
@@ -104,44 +104,45 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# (State/FCT, Region, Base Price, Base CAGR, Base Gross Yield, Coverage, Lat, Lon)
 NIGERIA_LOCATIONS = [
-    ("FCT Abuja", "North Central", 42_000_000, 0.068, 0.055, "High"),
-    ("Lagos", "South West", 65_000_000, 0.075, 0.062, "High"),
-    ("Rivers", "South South", 34_000_000, 0.056, 0.058, "Medium"),
-    ("Oyo", "South West", 22_000_000, 0.058, 0.056, "Medium"),
-    ("Ogun", "South West", 20_000_000, 0.064, 0.054, "Medium"),
-    ("Enugu", "South East", 24_000_000, 0.057, 0.055, "Medium"),
-    ("Anambra", "South East", 25_000_000, 0.059, 0.055, "Medium"),
-    ("Kano", "North West", 21_000_000, 0.054, 0.057, "Medium"),
-    ("Kaduna", "North West", 18_500_000, 0.048, 0.056, "Medium"),
-    ("Edo", "South South", 21_500_000, 0.055, 0.056, "Medium"),
-    ("Delta", "South South", 22_000_000, 0.053, 0.057, "Medium"),
-    ("Akwa Ibom", "South South", 19_000_000, 0.054, 0.056, "Medium"),
-    ("Cross River", "South South", 17_500_000, 0.050, 0.055, "Baseline"),
-    ("Abia", "South East", 18_000_000, 0.052, 0.056, "Baseline"),
-    ("Imo", "South East", 19_500_000, 0.053, 0.056, "Baseline"),
-    ("Ebonyi", "South East", 13_500_000, 0.047, 0.055, "Baseline"),
-    ("Ondo", "South West", 15_000_000, 0.049, 0.055, "Baseline"),
-    ("Osun", "South West", 14_500_000, 0.048, 0.054, "Baseline"),
-    ("Ekiti", "South West", 13_000_000, 0.046, 0.054, "Baseline"),
-    ("Kwara", "North Central", 16_000_000, 0.050, 0.055, "Baseline"),
-    ("Plateau", "North Central", 16_500_000, 0.046, 0.055, "Baseline"),
-    ("Niger", "North Central", 15_500_000, 0.052, 0.055, "Baseline"),
-    ("Kogi", "North Central", 12_500_000, 0.044, 0.055, "Baseline"),
-    ("Benue", "North Central", 13_000_000, 0.043, 0.055, "Baseline"),
-    ("Nasarawa", "North Central", 17_000_000, 0.058, 0.055, "Medium"),
-    ("Bauchi", "North East", 12_500_000, 0.045, 0.056, "Baseline"),
-    ("Borno", "North East", 11_500_000, 0.040, 0.056, "Baseline"),
-    ("Gombe", "North East", 12_000_000, 0.044, 0.055, "Baseline"),
-    ("Taraba", "North East", 11_000_000, 0.042, 0.055, "Baseline"),
-    ("Adamawa", "North East", 12_000_000, 0.043, 0.055, "Baseline"),
-    ("Yobe", "North East", 10_500_000, 0.039, 0.056, "Baseline"),
-    ("Sokoto", "North West", 13_000_000, 0.044, 0.056, "Baseline"),
-    ("Zamfara", "North West", 11_000_000, 0.038, 0.056, "Baseline"),
-    ("Kebbi", "North West", 11_500_000, 0.041, 0.056, "Baseline"),
-    ("Jigawa", "North West", 11_000_000, 0.042, 0.056, "Baseline"),
-    ("Katsina", "North West", 13_500_000, 0.045, 0.056, "Baseline"),
-    ("Bayelsa", "South South", 15_000_000, 0.046, 0.056, "Baseline"),
+    ("FCT Abuja", "North Central", 42_000_000, 0.035, 0.055, "High", 9.0765, 7.3986),
+    ("Lagos", "South West", 65_000_000, 0.040, 0.062, "High", 6.5244, 3.3792),
+    ("Rivers", "South South", 34_000_000, 0.020, 0.058, "Medium", 4.8156, 7.0498),
+    ("Oyo", "South West", 22_000_000, 0.025, 0.056, "Medium", 8.2151, 3.5643),
+    ("Ogun", "South West", 20_000_000, 0.030, 0.054, "Medium", 6.9789, 3.4389),
+    ("Enugu", "South East", 24_000_000, 0.022, 0.055, "Medium", 6.5244, 7.5086),
+    ("Anambra", "South East", 25_000_000, 0.024, 0.055, "Medium", 6.2183, 6.9532),
+    ("Kano", "North West", 21_000_000, 0.018, 0.057, "Medium", 12.0022, 8.5920),
+    ("Kaduna", "North West", 18_500_000, 0.005, 0.056, "Medium", 10.5105, 7.4165),
+    ("Edo", "South South", 21_500_000, 0.020, 0.056, "Medium", 6.6077, 5.9723),
+    ("Delta", "South South", 22_000_000, 0.015, 0.057, "Medium", 5.5273, 6.1784),
+    ("Akwa Ibom", "South South", 19_000_000, 0.020, 0.056, "Medium", 4.9409, 7.8412),
+    ("Cross River", "South South", 17_500_000, 0.012, 0.055, "Baseline", 5.8672, 8.5205),
+    ("Abia", "South East", 18_000_000, 0.015, 0.056, "Baseline", 5.4541, 7.5153),
+    ("Imo", "South East", 19_500_000, 0.016, 0.056, "Baseline", 5.5720, 7.0588),
+    ("Ebonyi", "South East", 13_500_000, 0.008, 0.055, "Baseline", 6.1997, 8.0349),
+    ("Ondo", "South West", 15_000_000, 0.012, 0.055, "Baseline", 7.0210, 5.0567),
+    ("Osun", "South West", 14_500_000, 0.010, 0.054, "Baseline", 7.5484, 4.4978),
+    ("Ekiti", "South West", 13_000_000, 0.008, 0.054, "Baseline", 7.7369, 5.2738),
+    ("Kwara", "North Central", 16_000_000, 0.014, 0.055, "Baseline", 8.8368, 4.6688),
+    ("Plateau", "North Central", 16_500_000, 0.004, 0.055, "Baseline", 9.0583, 9.6826),
+    ("Niger", "North Central", 15_500_000, 0.015, 0.055, "Baseline", 9.9326, 5.6511),
+    ("Kogi", "North Central", 12_500_000, -0.004, 0.055, "Baseline", 7.7950, 6.6869),
+    ("Benue", "North Central", 13_000_000, -0.006, 0.055, "Baseline", 7.3506, 8.7773),
+    ("Nasarawa", "North Central", 17_000_000, 0.025, 0.055, "Medium", 8.4388, 8.2383),
+    ("Bauchi", "North East", 12_500_000, 0.003, 0.056, "Baseline", 10.6371, 10.0807),
+    ("Borno", "North East", 11_500_000, -0.010, 0.056, "Baseline", 11.8311, 13.1510),
+    ("Gombe", "North East", 12_000_000, 0.004, 0.055, "Baseline", 10.2791, 11.1731),
+    ("Taraba", "North East", 11_000_000, -0.005, 0.055, "Baseline", 8.0141, 10.7376),
+    ("Adamawa", "North East", 12_000_000, -0.004, 0.055, "Baseline", 9.3265, 12.3984),
+    ("Yobe", "North East", 10_500_000, -0.012, 0.056, "Baseline", 12.1233, 11.5066),
+    ("Sokoto", "North West", 13_000_000, 0.002, 0.056, "Baseline", 13.0611, 5.3152),
+    ("Zamfara", "North West", 11_000_000, -0.015, 0.056, "Baseline", 12.0079, 6.4191),
+    ("Kebbi", "North West", 11_500_000, 0.000, 0.056, "Baseline", 11.4168, 4.1075),
+    ("Jigawa", "North West", 11_000_000, 0.001, 0.056, "Baseline", 12.5631, 9.3800),
+    ("Katsina", "North West", 13_500_000, 0.003, 0.056, "Baseline", 12.5631, 7.6207),
+    ("Bayelsa", "South South", 15_000_000, 0.005, 0.056, "Baseline", 4.7630, 6.0289),
 ]
 
 POSITIVE_TERMS = {
@@ -174,33 +175,33 @@ POSITIVE_TERMS = {
 }
 
 NEGATIVE_TERMS = {
-    "drop": -0.022,
-    "dropping": -0.022,
-    "fall": -0.020,
-    "falling": -0.020,
-    "crash": -0.030,
-    "decline": -0.018,
-    "declining": -0.018,
-    "low": -0.014,
-    "lower": -0.014,
-    "down": -0.014,
-    "decrease": -0.016,
-    "decreasing": -0.016,
-    "oversupply": -0.018,
-    "glut": -0.018,
-    "flood": -0.022,
-    "flooding": -0.022,
-    "insecurity": -0.025,
-    "unsafe": -0.022,
-    "dilapidated": -0.018,
-    "decay": -0.018,
-    "stagnant": -0.012,
-    "stagnation": -0.012,
-    "slump": -0.020,
-    "recession": -0.018,
-    "abandon": -0.020,
-    "abandoned": -0.020,
-    "poor": -0.012,
+    "drop": -0.025,
+    "dropping": -0.025,
+    "fall": -0.022,
+    "falling": -0.022,
+    "crash": -0.035,
+    "decline": -0.020,
+    "declining": -0.020,
+    "low": -0.016,
+    "lower": -0.016,
+    "down": -0.018,
+    "decrease": -0.018,
+    "decreasing": -0.018,
+    "oversupply": -0.020,
+    "glut": -0.020,
+    "flood": -0.025,
+    "flooding": -0.025,
+    "insecurity": -0.028,
+    "unsafe": -0.025,
+    "dilapidated": -0.020,
+    "decay": -0.020,
+    "stagnant": -0.015,
+    "stagnation": -0.015,
+    "slump": -0.022,
+    "recession": -0.020,
+    "abandon": -0.022,
+    "abandoned": -0.022,
+    "poor": -0.014,
 }
 
 
@@ -220,6 +221,19 @@ def normalize_state_name(raw_value: str) -> str:
     return "FCT Abuja"
 
 
+def get_place_coordinates(place_name: str, state_name: str) -> tuple[float, float]:
+    meta = next(item for item in NIGERIA_LOCATIONS if item[0] == state_name)
+    base_lat, base_lon = float(meta[6]), float(meta[7])
+    clean_place = (place_name or "").strip().lower()
+    if not clean_place:
+        return base_lat, base_lon
+
+    digest = hashlib.md5(f"{state_name}::{clean_place}".encode("utf-8")).hexdigest()
+    lat_offset = ((int(digest[:8], 16) / 0xFFFFFFFF) - 0.5) * 0.24
+    lon_offset = ((int(digest[8:16], 16) / 0xFFFFFFFF) - 0.5) * 0.24
+    return round(base_lat + lat_offset, 5), round(base_lon + lon_offset, 5)
+
+
 @st.cache_data
 def load_nationwide_properties() -> pd.DataFrame:
     base_rows = []
@@ -230,7 +244,7 @@ def load_nationwide_properties() -> pd.DataFrame:
         ("2-Bedroom Apartment / Flat", 2, 0.72, 1.08),
     ]
 
-    for state_name, region, base_price, base_cagr, base_yield, coverage in NIGERIA_LOCATIONS:
+    for state_name, region, base_price, base_cagr, base_yield, coverage, lat, lon in NIGERIA_LOCATIONS:
         for p_type, beds, mult, yield_mult in property_types:
             fair_val = round(base_price * mult, -3)
             asking_val = round(fair_val * 0.96, -3)
@@ -238,7 +252,7 @@ def load_nationwide_properties() -> pd.DataFrame:
                 {
                     "state": state_name,
                     "region": region,
-                    "district": f"{state_name} Central / Growth Corridor",
+                    "district": f"{state_name} Central Corridor",
                     "property_type": p_type,
                     "bedrooms": beds,
                     "asking_price": asking_val,
@@ -247,12 +261,13 @@ def load_nationwide_properties() -> pd.DataFrame:
                     "gross_yield": round(base_yield * yield_mult, 4),
                     "data_coverage": coverage,
                     "source_type": "Nationwide Baseline Model",
+                    "lat": lat,
+                    "lon": lon,
                 }
             )
 
     df = pd.DataFrame(base_rows)
 
-    # Merge existing CSV data if available in the repository
     csv_candidates = [
         "abuja_rental_cleaned.csv",
         "nigeria_properties.csv",
@@ -323,6 +338,8 @@ def load_nationwide_properties() -> pd.DataFrame:
                                 "gross_yield": st_meta[4],
                                 "data_coverage": "Observed + Baseline",
                                 "source_type": os.path.basename(path),
+                                "lat": float(st_meta[6]),
+                                "lon": float(st_meta[7]),
                             }
                         )
                     if parsed_rows:
@@ -348,7 +365,6 @@ def analyze_user_text_and_forecast(
     text_rate_delta = 0.0
     matched_factors = []
 
-    # Check single words and bigrams
     for tok in tokens:
         if tok in POSITIVE_TERMS:
             text_rate_delta += POSITIVE_TERMS[tok]
@@ -359,19 +375,18 @@ def analyze_user_text_and_forecast(
 
     for i in range(len(tokens) - 1):
         bigram = f"{tokens[i]} {tokens[i + 1]}"
-        if "price drop" in bigram or "prices drop" in bigram or "price fall" in bigram or "go down" in bigram:
-            text_rate_delta -= 0.020
+        if any(p in bigram for p in ["price drop", "prices drop", "price fall", "go down", "will drop", "going drop"]):
+            text_rate_delta -= 0.025
             matched_factors.append(f"-{bigram}")
-        elif "price rise" in bigram or "prices rise" in bigram or "go up" in bigram or "price high" in bigram:
+        elif any(p in bigram for p in ["price rise", "prices rise", "go up", "price high", "will rise", "going high"]):
             text_rate_delta += 0.018
             matched_factors.append(f"+{bigram}")
 
-    # Bound the text adjustment so a single prompt does not produce unrealistic numbers
-    text_rate_delta = max(-0.065, min(0.055, text_rate_delta))
+    text_rate_delta = max(-0.075, min(0.060, text_rate_delta))
 
-    conservative_rate = max(-0.05, min(0.18, base_cagr + text_rate_delta - 0.015))
-    base_rate = max(-0.04, min(0.20, base_cagr + text_rate_delta))
-    optimistic_rate = max(-0.02, min(0.22, base_cagr + text_rate_delta + 0.015))
+    conservative_rate = max(-0.06, min(0.18, base_cagr + text_rate_delta - 0.015))
+    base_rate = max(-0.05, min(0.20, base_cagr + text_rate_delta))
+    optimistic_rate = max(-0.03, min(0.22, base_cagr + text_rate_delta + 0.015))
 
     conservative_price = starting_price * ((1.0 + conservative_rate) ** years)
     base_price = starting_price * ((1.0 + base_rate) ** years)
@@ -381,6 +396,7 @@ def analyze_user_text_and_forecast(
 
     if base_rate > 0.005:
         direction = "HIGH (Price Expected to Rise)"
+        short_verdict = "HIGH"
         signal_class = "signal-rise"
         summary = (
             f"Projected to rise from {format_naira(starting_price)} to "
@@ -389,6 +405,7 @@ def analyze_user_text_and_forecast(
         )
     elif base_rate < -0.005:
         direction = "DROP (Price Expected to Fall)"
+        short_verdict = "DROP"
         signal_class = "signal-drop"
         summary = (
             f"Projected to drop from {format_naira(starting_price)} to "
@@ -397,15 +414,17 @@ def analyze_user_text_and_forecast(
         )
     else:
         direction = "STEADY / FLAT"
+        short_verdict = "STEADY"
         signal_class = "signal-neutral"
         summary = (
             f"Projected to stay near {format_naira(base_price)} ({pct_change_base:+.1f}%) "
-            f"by {target_year} under the base estimate."
+            f"by {target_year} under the base estimate ({base_rate * 100:.1f}% annualized rate)."
         )
 
     return {
         "years": years,
         "direction": direction,
+        "short_verdict": short_verdict,
         "signal_class": signal_class,
         "summary": summary,
         "base_rate": base_rate,
@@ -417,16 +436,16 @@ def analyze_user_text_and_forecast(
     }
 
 
-def answer_advisor_question(question: str, state_name: str, forecast_info: dict) -> str:
+def answer_advisor_question(question: str, place_label: str, state_name: str, forecast_info: dict) -> str:
     q = (question or "").strip()
     if not q:
-        return "Enter a question about state pricing, yields, or the 2060 projection."
+        return "Enter a question about location pricing, yields, or the 2060 projection."
     return (
-        f"For {state_name} over {forecast_info['years']} years (to 2060 / selected target year), "
-        f"the current scenario signal is {forecast_info['direction']} with a base estimate of "
+        f"For {place_label} in {state_name} over {forecast_info['years']} years (to {2026 + forecast_info['years']}), "
+        f"the projected direction is {forecast_info['direction']} with a base estimate of "
         f"{format_naira(forecast_info['base_price'])} (conservative: {format_naira(forecast_info['conservative_price'])}, "
         f"optimistic: {format_naira(forecast_info['optimistic_price'])}). "
-        f"Note that multi-decade figures are modeled estimates rather than guarantees."
+        f"These figures are modeled estimates, not guarantees."
     )
 
 
@@ -447,8 +466,8 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### Property Advisor")
     advisor_prompt = st.text_area(
-        "Ask about state prices, yields, or 2060 scenarios",
-        placeholder="Example: Compare 2060 growth vs. current fair value in this state.",
+        "Ask about location prices, yields, or future scenarios",
+        placeholder="Example: Will this area rise or drop in value by 2060?",
         height=90,
     )
     ask_clicked = st.button("Run Advisor", use_container_width=True)
@@ -458,23 +477,159 @@ st.markdown(
     """
     <div class="main-header">
         <h1>Nigeria Property Valuation &amp; Long-Term Forecast Advisor</h1>
-        <p>Nationwide coverage across all 36 states and the FCT with valuation benchmarks, yield estimates, and forward price projections to 2060.</p>
+        <p>Nationwide coverage across all 36 states and the FCT with red-dot location mapping, valuation benchmarks, and balanced HIGH/DROP price projections.</p>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
+# Location & forecast inputs (including place name + state for red dot map)
+st.markdown("### Location Pin & Future Price Forecast")
+loc_col1, loc_col2, loc_col3, loc_col4 = st.columns([1.4, 1.1, 1.2, 0.8])
+with loc_col1:
+    typed_place = st.text_input(
+        "Type Place / Area / Estate Name",
+        value="Lugbe",
+        placeholder="Type a town, estate, or area name in the selected state",
+    )
+with loc_col2:
+    chosen_state = st.selectbox(
+        "Confirm State / FCT",
+        all_states,
+        index=all_states.index(selected_state),
+    )
+with loc_col3:
+    starting_amount = st.number_input(
+        "Starting Purchase Price (Naira)",
+        min_value=500_000.0,
+        max_value=5_000_000_000.0,
+        value=float(prop_row["asking_price"]),
+        step=1_000_000.0,
+    )
+with loc_col4:
+    target_year = st.number_input(
+        "Target Year",
+        min_value=2027,
+        max_value=2100,
+        value=2060,
+        step=1,
+    )
+
+user_thesis = st.text_input(
+    "Type market factors or expectations (positive or negative)",
+    value="Mixed market conditions with gradual growth and occasional price drops",
+    placeholder="Example: major road expansion and demand vs. flooding, insecurity, or price drop",
+)
+
+active_state_row = df[(df["state"] == chosen_state) & (df["property_type"] == selected_property)].iloc[0]
+pin_lat, pin_lon = get_place_coordinates(typed_place, chosen_state)
+display_place_name = typed_place.strip() if typed_place.strip() else chosen_state
+
+forecast = analyze_user_text_and_forecast(
+    user_text=user_thesis,
+    starting_price=starting_amount,
+    base_cagr=float(active_state_row["annual_cagr"]),
+    target_year=int(target_year),
+)
+
+# Direction banner (HIGH / DROP / STEADY)
+st.markdown(
+    f"""
+    <div class="{forecast['signal_class']}">
+        <div>{target_year} Direction for {display_place_name}, {chosen_state}: {forecast['direction']}</div>
+        <div style="font-weight: 400; margin-top: 4px;">{forecast['summary']}</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+if forecast["matched_factors"]:
+    st.caption(f"Detected text signals: {', '.join(forecast['matched_factors'])}")
+
+# Red dot map + future value summary side by side
+map_col, info_col = st.columns([1.65, 1.0])
+
+with map_col:
+    st.markdown("#### Red Dot Location Map")
+    pin_df = pd.DataFrame(
+        [
+            {
+                "place": display_place_name,
+                "state": chosen_state,
+                "lat": pin_lat,
+                "lon": pin_lon,
+                "verdict": forecast["short_verdict"],
+                "projected_price": format_naira(forecast["base_price"]),
+            }
+        ]
+    )
+
+    red_dot_layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=pin_df,
+        get_position="[lon, lat]",
+        get_color="[220, 38, 38, 225]",
+        get_radius=14000,
+        pickable=True,
+        auto_highlight=True,
+    )
+
+    view_state = pdk.ViewState(
+        latitude=pin_lat,
+        longitude=pin_lon,
+        zoom=8.5,
+        pitch=0,
+    )
+
+    deck = pdk.Deck(
+        layers=[red_dot_layer],
+        initial_view_state=view_state,
+        map_style="light",
+        tooltip={
+            "html": "<b>Place:</b> {place}<br/><b>State:</b> {state}<br/><b>Direction:</b> {verdict}<br/><b>Projected Value:</b> {projected_price}",
+            "style": {"backgroundColor": "#ffffff", "color": "#0f2942"},
+        },
+    )
+    st.pydeck_chart(deck, use_container_width=True, height=340)
+    st.caption(f"Red dot pinned at {display_place_name}, {chosen_state} ({pin_lat}, {pin_lon}).")
+
+with info_col:
+    st.markdown("#### Future Price Breakdown")
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">Conservative ({target_year})</div>
+            <div class="metric-value">{format_naira(forecast['conservative_price'])}</div>
+            <div class="metric-sub">Lower-bound estimate</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Base Estimate ({target_year})</div>
+            <div class="metric-value">{format_naira(forecast['base_price'])}</div>
+            <div class="metric-sub">Net change: {forecast['pct_change_base']:+.1f}%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Optimistic ({target_year})</div>
+            <div class="metric-value">{format_naira(forecast['optimistic_price'])}</div>
+            <div class="metric-sub">Upper-bound estimate</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
 # Top valuation metrics for selected state and property
 c1, c2, c3, c4 = st.columns(4)
-spread_pct = ((prop_row["asking_price"] - prop_row["fair_value"]) / prop_row["fair_value"]) * 100.0
+spread_pct = (
+    (active_state_row["asking_price"] - active_state_row["fair_value"])
+    / active_state_row["fair_value"]
+) * 100.0
 
 with c1:
     st.markdown(
         f"""
         <div class="metric-card">
             <div class="metric-label">Reference Asking Price</div>
-            <div class="metric-value">{format_naira(prop_row['asking_price'])}</div>
-            <div class="metric-sub">{selected_state} ({prop_row['region']})</div>
+            <div class="metric-value">{format_naira(active_state_row['asking_price'])}</div>
+            <div class="metric-sub">{chosen_state} ({active_state_row['region']})</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -485,7 +640,7 @@ with c2:
         f"""
         <div class="metric-card">
             <div class="metric-label">Estimated Fair Value</div>
-            <div class="metric-value">{format_naira(prop_row['fair_value'])}</div>
+            <div class="metric-value">{format_naira(active_state_row['fair_value'])}</div>
             <div class="metric-sub">Spread vs. Asking: {spread_pct:+.1f}%</div>
         </div>
         """,
@@ -497,7 +652,7 @@ with c3:
         f"""
         <div class="metric-card">
             <div class="metric-label">Est. Gross Rental Yield</div>
-            <div class="metric-value">{prop_row['gross_yield'] * 100:.1f}%</div>
+            <div class="metric-value">{active_state_row['gross_yield'] * 100:.1f}%</div>
             <div class="metric-sub">Baseline annual benchmark</div>
         </div>
         """,
@@ -509,100 +664,15 @@ with c4:
         f"""
         <div class="metric-card">
             <div class="metric-label">Data Coverage Tier</div>
-            <div class="metric-value">{prop_row['data_coverage']}</div>
-            <div class="metric-sub">Source: {prop_row['source_type']}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-# Interactive 2060 text-driven prediction section
-st.markdown("### 2060 Price Direction & Scenario Estimator")
-st.write(
-    "Type a market note, location driver, or price assumption below to see whether the model projects the price to be HIGH (rise) or DROP by 2060."
-)
-
-col_input1, col_input2, col_input3 = st.columns([2.4, 1.1, 0.9])
-with col_input1:
-    user_thesis = st.text_input(
-        "Type market conditions, area drivers, or what you expect to happen",
-        value="New road and infrastructure expansion with steady urban demand, though inflation fluctuates",
-        placeholder="Type anything here, e.g. major infrastructure and growth vs. flooding, insecurity, or oversupply...",
-    )
-with col_input2:
-    starting_amount = st.number_input(
-        "Starting Purchase Price (Naira)",
-        min_value=500_000.0,
-        max_value=5_000_000_000.0,
-        value=float(prop_row["asking_price"]),
-        step=1_000_000.0,
-    )
-with col_input3:
-    target_year = st.number_input(
-        "Target Forecast Year",
-        min_value=2027,
-        max_value=2100,
-        value=2060,
-        step=1,
-    )
-
-forecast = analyze_user_text_and_forecast(
-    user_text=user_thesis,
-    starting_price=starting_amount,
-    base_cagr=float(prop_row["annual_cagr"]),
-    target_year=int(target_year),
-)
-
-st.markdown(
-    f"""
-    <div class="{forecast['signal_class']}">
-        <div>2060 / Target Year Outlook: {forecast['direction']}</div>
-        <div style="font-weight: 400; margin-top: 4px;">{forecast['summary']}</div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-if forecast["matched_factors"]:
-    st.caption(f"Detected text signals: {', '.join(forecast['matched_factors'])}")
-
-f1, f2, f3 = st.columns(3)
-with f1:
-    st.markdown(
-        f"""
-        <div class="metric-card" style="margin-top: 12px;">
-            <div class="metric-label">Conservative Estimate ({target_year})</div>
-            <div class="metric-value">{format_naira(forecast['conservative_price'])}</div>
-            <div class="metric-sub">Lower-bound scenario</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-with f2:
-    st.markdown(
-        f"""
-        <div class="metric-card" style="margin-top: 12px;">
-            <div class="metric-label">Base Estimate ({target_year})</div>
-            <div class="metric-value">{format_naira(forecast['base_price'])}</div>
-            <div class="metric-sub">Change: {forecast['pct_change_base']:+.1f}% over {forecast['years']} yrs</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-with f3:
-    st.markdown(
-        f"""
-        <div class="metric-card" style="margin-top: 12px;">
-            <div class="metric-label">Optimistic Estimate ({target_year})</div>
-            <div class="metric-value">{format_naira(forecast['optimistic_price'])}</div>
-            <div class="metric-sub">Upper-bound scenario</div>
+            <div class="metric-value">{active_state_row['data_coverage']}</div>
+            <div class="metric-sub">Source: {active_state_row['source_type']}</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
 if ask_clicked:
-    st.info(answer_advisor_question(advisor_prompt, selected_state, forecast))
+    st.info(answer_advisor_question(advisor_prompt, display_place_name, chosen_state, forecast))
 
 # Nationwide summary table across states
 st.markdown("### Nationwide State & FCT Comparison")
@@ -616,24 +686,21 @@ summary_df = df[df["property_type"] == property_options[0]].copy()
 if region_filter != "All Regions":
     summary_df = summary_df[summary_df["region"] == region_filter]
 
-summary_df["Projected 2060 (Base)"] = summary_df.apply(
+summary_df["Projected Value (Base)"] = summary_df.apply(
     lambda r: analyze_user_text_and_forecast(
         user_thesis, float(r["asking_price"]), float(r["annual_cagr"]), int(target_year)
     )["base_price"],
     axis=1,
 )
-summary_df["2060 Outlook"] = summary_df.apply(
-    lambda r: "HIGH"
-    if analyze_user_text_and_forecast(
+summary_df["Direction"] = summary_df.apply(
+    lambda r: analyze_user_text_and_forecast(
         user_thesis, float(r["asking_price"]), float(r["annual_cagr"]), int(target_year)
-    )["base_rate"]
-    > 0.005
-    else "DROP",
+    )["short_verdict"],
     axis=1,
 )
 
 display_table = summary_df[
-    ["state", "region", "asking_price", "fair_value", "Projected 2060 (Base)", "2060 Outlook", "data_coverage"]
+    ["state", "region", "asking_price", "fair_value", "Projected Value (Base)", "Direction", "data_coverage"]
 ].rename(
     columns={
         "state": "State / FCT",
@@ -649,7 +716,7 @@ st.dataframe(display_table, use_container_width=True, hide_index=True)
 st.markdown(
     """
     <div class="disclaimer-box">
-        Forecasts through 2060 and beyond are scenario-based estimates driven by baseline state assumptions and user-entered text signals. They are modeled projections for planning and defense discussion, not financial guarantees.
+        Future prices and HIGH/DROP signals are scenario-based estimates derived from location baselines, user-entered factors, and holding horizons. They are modeled estimates for planning and defense discussion, not guarantees.
     </div>
     """,
     unsafe_allow_html=True,
