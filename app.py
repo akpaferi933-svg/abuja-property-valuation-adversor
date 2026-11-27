@@ -158,6 +158,42 @@ st.markdown(
             font-weight: 600;
             margin-bottom: 12px;
         }
+        .timing-card-buy {
+            background-color: #e9f8ef;
+            border: 1px solid #4ade80;
+            border-left: 5px solid #15803d;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            color: #0f3d24;
+        }
+        .timing-card-wait {
+            background-color: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-left: 5px solid #d97706;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            color: #5c3706;
+        }
+        .timing-card-caution {
+            background-color: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-left: 5px solid #dc2626;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            color: #6b1616;
+        }
+        .timing-title {
+            font-size: 0.98rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .timing-body {
+            font-size: 0.87rem;
+            line-height: 1.45;
+        }
         .rank-row {
             display: flex;
             justify-content: space-between;
@@ -387,10 +423,12 @@ def compute_cycle_forecast(
             delta += NEGATIVE_TERMS[tok]
     delta = max(-0.080, min(0.060, delta))
 
-    regime_bonus = MARKET_REGIMES.get(regime_name, MARKET_REGIMES["Expansion Cycle (Rising Demand & Cost Pressure)"])["drift_bonus"]
+    regime_bonus = MARKET_REGIMES.get(
+        regime_name,
+        MARKET_REGIMES["Expansion Cycle (Rising Demand & Cost Pressure)"],
+    )["drift_bonus"]
     effective_drift = max(-0.045, min(0.14, base_cagr + delta + regime_bonus))
 
-    # Cycle wave captures rising stretches, steady plateaus, and pullback waves over time
     series_rows = []
     b_val = float(automatic_price)
     c_val = float(automatic_price)
@@ -459,6 +497,59 @@ def compute_cycle_forecast(
         "pct_change": pct_change,
         "exceeds_cap": exceeds_cap,
         "series_df": pd.DataFrame(series_rows).set_index("Year"),
+    }
+
+
+def compute_buy_timing_signal(
+    place_label: str,
+    state_name: str,
+    target_year: int,
+    auto_price: float,
+    forecast: dict,
+) -> dict:
+    verdict = forecast["verdict"]
+    phase = forecast["current_phase"]
+    pct_change = forecast["pct_change"]
+    projected_gap = forecast["base_price"] - auto_price
+    exceeds_cap = forecast["exceeds_cap"]
+
+    if exceeds_cap:
+        return {
+            "action": "CAUTIOUS / STRETCH CHECK",
+            "card_cls": "timing-card-caution",
+            "summary": (
+                f"Projected {target_year} value ({format_naira(forecast['base_price'])}) crosses the reachability ceiling "
+                f"for {place_label}, {state_name}. Verify realistic entry value and budget limits before locking in."
+            ),
+        }
+
+    if verdict == "DROP" or "Pullback" in phase:
+        return {
+            "action": "WAIT / NEGOTIATE ENTRY",
+            "card_cls": "timing-card-wait",
+            "summary": (
+                f"{place_label}, {state_name} is in a {phase} ({verdict} signal, {pct_change:+.1f}% to {target_year}). "
+                f"Waiting or negotiating below {format_naira(auto_price)} can improve entry value before the next upward wave."
+            ),
+        }
+
+    if "Steady" in phase or verdict == "STEADY":
+        return {
+            "action": "BUY NOW / ACCUMULATE WINDOW",
+            "card_cls": "timing-card-buy",
+            "summary": (
+                f"Prices in {place_label}, {state_name} are in a {phase} ({verdict} signal, {pct_change:+.1f}% to {target_year}). "
+                f"Entering near {format_naira(auto_price)} offers a calmer window ahead of projected appreciation of {format_naira(max(0.0, projected_gap))}."
+            ),
+        }
+
+    return {
+        "action": "BUY NOW / EARLY ENTRY AHEAD OF SURGE",
+        "card_cls": "timing-card-buy",
+        "summary": (
+            f"{place_label}, {state_name} shows a {verdict} trajectory ({phase}, {pct_change:+.1f}% by {target_year}). "
+            f"Buying near {format_naira(auto_price)} avoids an estimated {format_naira(max(0.0, projected_gap))} price climb over {forecast['years']} years."
+        ),
     }
 
 
@@ -557,7 +648,7 @@ def render_map(place_label: str, state_name: str, profile: dict, forecast: dict,
             "style": {"backgroundColor": "#ffffff", "color": "#0e241b"},
         },
     )
-    st.pydeck_chart(deck, use_container_width=True, height=height)
+    st.pydeck_chart(deck, width="stretch", height=height)
 
 
 all_states = [s[0] for s in NIGERIA_LOCATIONS]
@@ -607,7 +698,7 @@ st.markdown(
     """
     <div class="hero-banner">
         <h1>Nigeria Property Valuation &amp; Forecast Advisor</h1>
-        <p>Market-cycle tracking, automatic current pricing, future forecasting, and backend audit logs across all 36 states and the FCT.</p>
+        <p>Market-cycle tracking, Buy Now vs. Wait timing signals, automatic current pricing, and backend audit logs across all 36 states and the FCT.</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -644,10 +735,17 @@ forecast = compute_cycle_forecast(
     cycle_volatility=volatility_val,
     realistic_ceiling=ceiling_val,
 )
+timing_signal = compute_buy_timing_signal(
+    place_label=place_label,
+    state_name=selected_state,
+    target_year=int(target_year),
+    auto_price=auto_price,
+    forecast=forecast,
+)
 
 snapshot_key = (
     f"{place_label}|{selected_state}|{profile['tier']}|{selected_prop}|{selected_regime}|"
-    f"{int(target_year)}|{round(auto_price, 0)}|{round(forecast['base_price'], 0)}|{forecast['verdict']}"
+    f"{int(target_year)}|{round(auto_price, 0)}|{round(forecast['base_price'], 0)}|{forecast['verdict']}|{timing_signal['action']}"
 )
 log_moderator_change_if_new(
     {
@@ -667,6 +765,16 @@ st.markdown(
     <div class="{forecast['signal_cls']}">
         {target_year} Signal for {place_label}, {selected_state} ({profile['tier']}): {forecast['direction_text']} —
         Automatic Price Today: {format_naira(auto_price)} to {format_naira(forecast['base_price'])} ({forecast['pct_change']:+.1f}%).
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    f"""
+    <div class="{timing_signal['card_cls']}">
+        <div class="timing-title">Buyer Timing Signal: {timing_signal['action']}</div>
+        <div class="timing-body">{timing_signal['summary']}</div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -753,7 +861,7 @@ if nav_section == "Dashboard":
         st.markdown(f'<div class="card-panel"><h4>Price by Location — {place_label}, {selected_state}</h4>', unsafe_allow_html=True)
         render_map(place_label, selected_state, profile, forecast, auto_price, height=390)
         st.caption(f"Current (Auto): {format_naira(auto_price)} | {target_year} Base: {format_naira(forecast['base_price'])} | Signal: {forecast['verdict']}")
-        if st.button("Save Analysis to Backend", use_container_width=True):
+        if st.button("Save Analysis to Backend", width="stretch"):
             save_analysis_record(
                 {
                     "Location": f"{place_label}, {selected_state}",
@@ -875,6 +983,7 @@ elif nav_section == "Compare Locations":
             cycle_volatility=volatility_val,
             realistic_ceiling=ceiling_val,
         )
+        tm_row = compute_buy_timing_signal(st_name, st_name, int(target_year), float(p_now), fc_row)
         table_rows.append(
             {
                 "Location": st_name,
@@ -883,12 +992,13 @@ elif nav_section == "Compare Locations":
                 f"Projected {target_year} (Base)": round(fc_row["base_price"], -5),
                 "Growth (%)": round(fc_row["pct_change"], 1),
                 "Direction": fc_row["verdict"],
+                "Timing Signal": tm_row["action"],
                 "Rental Yield (%)": round(b_yield * 100, 1),
                 "Market Tier": selected_tier,
             }
         )
     comp_df = pd.DataFrame(table_rows)
-    st.dataframe(comp_df, use_container_width=True, hide_index=True)
+    st.dataframe(comp_df, width="stretch", hide_index=True)
     st.download_button(
         label="Export Report (CSV)",
         data=comp_df.to_csv(index=False).encode("utf-8"),
@@ -901,7 +1011,7 @@ elif nav_section == "Saved Analysis":
     st.markdown('<div class="card-panel"><h4>Saved Property Analyses (Database)</h4>', unsafe_allow_html=True)
     saved_df = fetch_saved_analyses()
     if not saved_df.empty:
-        st.dataframe(saved_df, use_container_width=True, hide_index=True)
+        st.dataframe(saved_df, width="stretch", hide_index=True)
         col_s1, col_s2 = st.columns(2)
         with col_s1:
             st.download_button(
@@ -963,7 +1073,7 @@ elif nav_section == "Settings & Profile":
 
 st.markdown('<div class="card-panel"><h4>Moderator Market Change &amp; Forecast Log (Backend)</h4>', unsafe_allow_html=True)
 mod_df = fetch_moderator_logs(limit=25)
-st.dataframe(mod_df, use_container_width=True, hide_index=True)
+st.dataframe(mod_df, width="stretch", hide_index=True)
 st.download_button(
     label="Export Moderator Log (CSV)",
     data=mod_df.to_csv(index=False).encode("utf-8"),
@@ -976,7 +1086,7 @@ st.markdown("#### Key Platform Features")
 f1, f2, f3, f4, f5 = st.columns(5)
 with f1:
     st.markdown(
-        '<div class="feature-card"><div class="feature-title">Automatic Pricing</div><div class="feature-desc">Calculated from 36 states + FCT, tiers, and backend overrides.</div></div>',
+        '<div class="feature-card"><div class="feature-title">Buy vs. Wait Timing</div><div class="feature-desc">Combines cycle phase, HIGH/DROP signal, and target horizon.</div></div>',
         unsafe_allow_html=True,
     )
 with f2:
@@ -996,14 +1106,14 @@ with f4:
     )
 with f5:
     st.markdown(
-        '<div class="feature-card"><div class="feature-title">Compare &amp; Export</div><div class="feature-desc">Full comparison table with downloadable CSV reports.</div></div>',
+        '<div class="feature-card"><div class="feature-title">Compare &amp; Export</div><div class="feature-desc">Full 36-state comparison with timing signals and CSV export.</div></div>',
         unsafe_allow_html=True,
     )
 
 st.markdown(
     """
     <div class="disclaimer-box">
-        Market cycle regimes, valuations, and multi-year forecasts are modeled for planning and decision support across all 36 states and the FCT, not financial guarantees.
+        Buy Now vs. Wait signals, market cycle regimes, valuations, and multi-year forecasts are modeled for planning and decision support across all 36 states and the FCT, not financial guarantees.
     </div>
     """,
     unsafe_allow_html=True,
