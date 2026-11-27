@@ -4,10 +4,22 @@ import pandas as pd
 import pydeck as pdk
 import streamlit as st
 
+from backend import (
+    clear_saved_analyses_db,
+    fetch_market_overrides,
+    fetch_moderator_logs,
+    fetch_saved_analyses,
+    init_db,
+    log_moderator_change_if_new,
+    save_analysis_record,
+    upsert_market_override,
+)
+
 st.set_page_config(
     page_title="Nigeria Property Valuation & Forecast Advisor",
     layout="wide",
 )
+init_db()
 
 st.markdown(
     """
