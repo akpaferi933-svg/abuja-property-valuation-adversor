@@ -1,617 +1,656 @@
+import math
 import os
-import pickle
 import re
-
 import numpy as np
 import pandas as pd
 import streamlit as st
-from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.metrics import mean_absolute_error, r2_score
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder
-
-ABUJA_TOWNS = ["Gwarinpa", "Wuye", "Jahi", "Lokogoma", "Lugbe", "Kubwa"]
-MODEL_PATH = "abuja_price_model.pkl"
-DATA_PATH = "abuja_rental_cleaned.csv"
 
 st.set_page_config(
-    page_title="Abuja Property Valuation & Investment Advisor",
+    page_title="Nigeria Property Valuation & 2060 Forecast Advisor",
     layout="wide",
 )
 
+# Light blue and white styling (no emojis)
 st.markdown(
     """
     <style>
-        .block-container {
-            padding-top: 1.75rem;
-            padding-bottom: 2rem;
+        .stApp {
+            background-color: #eef6ff;
+            color: #0f2942;
         }
-        [data-testid="stMetricValue"] {
-            font-size: 1.55rem;
+        [data-testid="stSidebar"] {
+            background-color: #f7fbff;
+            border-right: 1px solid #cfe3f7;
+        }
+        .main-header {
+            background-color: #ffffff;
+            border: 1px solid #cfe3f7;
+            border-left: 6px solid #1d6fa5;
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 18px;
+        }
+        .main-header h1 {
+            margin: 0 0 6px 0;
+            color: #0f2942;
+            font-size: 1.85rem;
+            font-weight: 700;
+        }
+        .main-header p {
+            margin: 0;
+            color: #3b5b78;
+            font-size: 0.98rem;
+        }
+        .metric-card {
+            background-color: #ffffff;
+            border: 1px solid #cfe3f7;
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+        }
+        .metric-label {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #4a6b88;
+            margin-bottom: 4px;
             font-weight: 600;
         }
-        .section-divider {
-            border: none;
-            border-top: 1px solid rgba(128, 128, 128, 0.22);
-            margin: 1.5rem 0;
+        .metric-value {
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #0f2942;
+        }
+        .metric-sub {
+            font-size: 0.85rem;
+            color: #3b5b78;
+            margin-top: 4px;
+        }
+        .signal-rise {
+            background-color: #e6f4ea;
+            border: 1px solid #8ec5a0;
+            color: #135329;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-weight: 600;
+        }
+        .signal-drop {
+            background-color: #fdecea;
+            border: 1px solid #e69b93;
+            color: #7a1c14;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-weight: 600;
+        }
+        .signal-neutral {
+            background-color: #f0f7ff;
+            border: 1px solid #9ec5eb;
+            color: #184975;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-weight: 600;
+        }
+        .disclaimer-box {
+            background-color: #f7fbff;
+            border: 1px solid #cfe3f7;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #3b5b78;
+            font-size: 0.86rem;
+            margin-top: 12px;
         }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
+NIGERIA_LOCATIONS = [
+    ("FCT Abuja", "North Central", 42_000_000, 0.068, 0.055, "High"),
+    ("Lagos", "South West", 65_000_000, 0.075, 0.062, "High"),
+    ("Rivers", "South South", 34_000_000, 0.056, 0.058, "Medium"),
+    ("Oyo", "South West", 22_000_000, 0.058, 0.056, "Medium"),
+    ("Ogun", "South West", 20_000_000, 0.064, 0.054, "Medium"),
+    ("Enugu", "South East", 24_000_000, 0.057, 0.055, "Medium"),
+    ("Anambra", "South East", 25_000_000, 0.059, 0.055, "Medium"),
+    ("Kano", "North West", 21_000_000, 0.054, 0.057, "Medium"),
+    ("Kaduna", "North West", 18_500_000, 0.048, 0.056, "Medium"),
+    ("Edo", "South South", 21_500_000, 0.055, 0.056, "Medium"),
+    ("Delta", "South South", 22_000_000, 0.053, 0.057, "Medium"),
+    ("Akwa Ibom", "South South", 19_000_000, 0.054, 0.056, "Medium"),
+    ("Cross River", "South South", 17_500_000, 0.050, 0.055, "Baseline"),
+    ("Abia", "South East", 18_000_000, 0.052, 0.056, "Baseline"),
+    ("Imo", "South East", 19_500_000, 0.053, 0.056, "Baseline"),
+    ("Ebonyi", "South East", 13_500_000, 0.047, 0.055, "Baseline"),
+    ("Ondo", "South West", 15_000_000, 0.049, 0.055, "Baseline"),
+    ("Osun", "South West", 14_500_000, 0.048, 0.054, "Baseline"),
+    ("Ekiti", "South West", 13_000_000, 0.046, 0.054, "Baseline"),
+    ("Kwara", "North Central", 16_000_000, 0.050, 0.055, "Baseline"),
+    ("Plateau", "North Central", 16_500_000, 0.046, 0.055, "Baseline"),
+    ("Niger", "North Central", 15_500_000, 0.052, 0.055, "Baseline"),
+    ("Kogi", "North Central", 12_500_000, 0.044, 0.055, "Baseline"),
+    ("Benue", "North Central", 13_000_000, 0.043, 0.055, "Baseline"),
+    ("Nasarawa", "North Central", 17_000_000, 0.058, 0.055, "Medium"),
+    ("Bauchi", "North East", 12_500_000, 0.045, 0.056, "Baseline"),
+    ("Borno", "North East", 11_500_000, 0.040, 0.056, "Baseline"),
+    ("Gombe", "North East", 12_000_000, 0.044, 0.055, "Baseline"),
+    ("Taraba", "North East", 11_000_000, 0.042, 0.055, "Baseline"),
+    ("Adamawa", "North East", 12_000_000, 0.043, 0.055, "Baseline"),
+    ("Yobe", "North East", 10_500_000, 0.039, 0.056, "Baseline"),
+    ("Sokoto", "North West", 13_000_000, 0.044, 0.056, "Baseline"),
+    ("Zamfara", "North West", 11_000_000, 0.038, 0.056, "Baseline"),
+    ("Kebbi", "North West", 11_500_000, 0.041, 0.056, "Baseline"),
+    ("Jigawa", "North West", 11_000_000, 0.042, 0.056, "Baseline"),
+    ("Katsina", "North West", 13_500_000, 0.045, 0.056, "Baseline"),
+    ("Bayelsa", "South South", 15_000_000, 0.046, 0.056, "Baseline"),
+]
 
-def normalize_town(value: object) -> str:
-  text = str(value or "").strip()
-  for town in ABUJA_TOWNS:
-    if town.lower() in text.lower():
-      return town
-  return text if text else "Abuja"
+POSITIVE_TERMS = {
+    "high": 0.015,
+    "rise": 0.015,
+    "rising": 0.015,
+    "appreciate": 0.018,
+    "appreciation": 0.018,
+    "grow": 0.014,
+    "growth": 0.014,
+    "boom": 0.022,
+    "demand": 0.012,
+    "infrastructure": 0.016,
+    "road": 0.010,
+    "roads": 0.010,
+    "rail": 0.015,
+    "metro": 0.015,
+    "airport": 0.014,
+    "development": 0.013,
+    "commercial": 0.012,
+    "expansion": 0.012,
+    "urban": 0.010,
+    "renovated": 0.010,
+    "prime": 0.014,
+    "scarce": 0.012,
+    "scarcity": 0.012,
+    "up": 0.012,
+    "increase": 0.014,
+    "increasing": 0.014,
+}
+
+NEGATIVE_TERMS = {
+    "drop": -0.022,
+    "dropping": -0.022,
+    "fall": -0.020,
+    "falling": -0.020,
+    "crash": -0.030,
+    "decline": -0.018,
+    "declining": -0.018,
+    "low": -0.014,
+    "lower": -0.014,
+    "down": -0.014,
+    "decrease": -0.016,
+    "decreasing": -0.016,
+    "oversupply": -0.018,
+    "glut": -0.018,
+    "flood": -0.022,
+    "flooding": -0.022,
+    "insecurity": -0.025,
+    "unsafe": -0.022,
+    "dilapidated": -0.018,
+    "decay": -0.018,
+    "stagnant": -0.012,
+    "stagnation": -0.012,
+    "slump": -0.020,
+    "recession": -0.018,
+    "abandon": -0.020,
+    "abandoned": -0.020,
+    "poor": -0.012,
+}
 
 
-def classify_recommendation(diff_pct: float) -> str:
-  if diff_pct <= -15.0:
-    return "Strong Buy (Undervalued)"
-  if diff_pct <= 5.0:
-    return "Fair Value / Hold"
-  return "Overpriced (Negotiate / Skip)"
+def format_naira(amount: float) -> str:
+    return f"N{amount:,.0f}"
+
+
+def normalize_state_name(raw_value: str) -> str:
+    if not isinstance(raw_value, str):
+        return "FCT Abuja"
+    cleaned = raw_value.strip().lower()
+    if "abuja" in cleaned or "fct" in cleaned or "federal capital" in cleaned:
+        return "FCT Abuja"
+    for state_name, *_ in NIGERIA_LOCATIONS:
+        if state_name.lower() in cleaned:
+            return state_name
+    return "FCT Abuja"
 
 
 @st.cache_data
-def load_abuja_data(csv_path: str) -> pd.DataFrame:
-  raw = pd.read_csv(csv_path)
-  data = raw.copy()
-
-  data["price"] = pd.to_numeric(data.get("price"), errors="coerce")
-  data["bedrooms"] = (
-      pd.to_numeric(data.get("bedrooms"), errors="coerce").fillna(3).astype(int)
-  )
-
-  for col in ["bathrooms", "toilets", "parking_space"]:
-    if col in data.columns:
-      data[col] = pd.to_numeric(data[col], errors="coerce").fillna(0)
-    else:
-      data[col] = 0
-
-  town_col = "town_standard" if "town_standard" in data.columns else "town"
-  if town_col in data.columns:
-    data["town_standard"] = data[town_col].apply(normalize_town)
-  else:
-    data["town_standard"] = "Gwarinpa"
-
-  title_col = "title_clean" if "title_clean" in data.columns else "title"
-  if title_col in data.columns:
-    data["title_clean"] = data[title_col].fillna("Residential Property").astype(str)
-  else:
-    data["title_clean"] = "Residential Property"
-
-  data = data.dropna(subset=["price"])
-  data = data[data["price"] > 0].copy()
-
-  abuja_subset = data[data["town_standard"].isin(ABUJA_TOWNS)].copy()
-  if not abuja_subset.empty:
-    data = abuja_subset
-
-  return data.reset_index(drop=True)
-
-
-@st.cache_resource
-def load_or_train_model(
-    data: pd.DataFrame, model_path: str
-) -> tuple[Pipeline, dict[str, float]]:
-  feature_cols = [
-      "town_standard",
-      "title_clean",
-      "bedrooms",
-      "bathrooms",
-      "toilets",
-      "parking_space",
-  ]
-  for col in feature_cols:
-    if col not in data.columns:
-      data[col] = "Residential Property" if col == "title_clean" else 0
-
-  X = data[feature_cols].copy()
-  y_log = np.log1p(data["price"].astype(float))
-
-  X_train, X_test, y_train, y_test = train_test_split(
-      X, y_log, test_size=0.2, random_state=42
-  )
-
-  pipeline = None
-  if os.path.exists(model_path):
-    try:
-      with open(model_path, "rb") as f:
-        loaded = pickle.load(f)
-      if hasattr(loaded, "predict"):
-        test_pred = loaded.predict(X_test)
-        if len(test_pred) == len(X_test):
-          pipeline = loaded
-    except Exception:
-      pipeline = None
-
-  if pipeline is None:
-    preprocessor = ColumnTransformer(
-        transformers=[
-            (
-                "cat",
-                OneHotEncoder(handle_unknown="ignore"),
-                ["town_standard", "title_clean"],
-            ),
-            (
-                "num",
-                "passthrough",
-                ["bedrooms", "bathrooms", "toilets", "parking_space"],
-            ),
-        ]
-    )
-    pipeline = Pipeline(
-        steps=[
-            ("preprocessor", preprocessor),
-            (
-                "regressor",
-                GradientBoostingRegressor(
-                    n_estimators=200,
-                    learning_rate=0.05,
-                    max_depth=4,
-                    random_state=42,
-                ),
-            ),
-        ]
-    )
-    pipeline.fit(X_train, y_train)
-    try:
-      with open(model_path, "wb") as f:
-        pickle.dump(pipeline, f)
-    except Exception:
-      pass
-
-  pred_log_test = pipeline.predict(X_test)
-  actual_test = np.expm1(y_test)
-  pred_test = np.expm1(pred_log_test)
-  metrics = {
-      "r2": float(r2_score(actual_test, pred_test)),
-      "mae": float(mean_absolute_error(actual_test, pred_test)),
-  }
-  return pipeline, metrics
-
-
-def score_abuja_properties(
-    data: pd.DataFrame, model: Pipeline, yield_rate: float = 0.05
-) -> pd.DataFrame:
-  feature_cols = [
-      "town_standard",
-      "title_clean",
-      "bedrooms",
-      "bathrooms",
-      "toilets",
-      "parking_space",
-  ]
-  scored = data.copy()
-  pred_log = model.predict(scored[feature_cols])
-  scored["predicted_fair_price"] = np.maximum(np.expm1(pred_log), 100_000.0)
-  scored["price_diff_pct"] = (
-      (scored["price"] - scored["predicted_fair_price"])
-      / scored["predicted_fair_price"]
-  ) * 100.0
-  scored["recommendation"] = scored["price_diff_pct"].apply(
-      classify_recommendation
-  )
-  scored["est_annual_rent"] = scored["predicted_fair_price"] * yield_rate
-  scored["est_gross_yield"] = (
-      scored["est_annual_rent"] / scored["price"]
-  ) * 100.0
-  return scored
-
-
-def generate_property_ai_reply(
-    prompt_text: str,
-    abuja_df: pd.DataFrame,
-    selected_row: pd.Series,
-    yield_rate: float,
-) -> str:
-  q = (prompt_text or "").lower().strip()
-  available_towns = sorted(
-      [
-          t
-          for t in abuja_df["town_standard"].dropna().unique().tolist()
-          if t in ABUJA_TOWNS
-      ]
-  ) or ABUJA_TOWNS
-
-  matched_towns = [t for t in available_towns if t.lower() in q]
-  if not matched_towns and "lokogoma" in q:
-    matched_towns = ["Lokogoma"]
-
-  bed_match = re.search(r"(\d+)\s*-?\s*bed(?:room)?s?", q)
-  req_beds = int(bed_match.group(1)) if bed_match else None
-
-  budget_naira = None
-  m_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:m|million)\b", q)
-  if m_match:
-    budget_naira = float(m_match.group(1)) * 1_000_000.0
-  else:
-    raw_num = re.search(r"₦?\s*(\d{2,3}(?:,\d{3}){2,}|\d{7,11})", q)
-    if raw_num:
-      budget_naira = float(raw_num.group(1).replace(",", ""))
-
-  cur_bedrooms = int(selected_row["bedrooms"])
-  cur_title = str(selected_row["title_clean"])
-  cur_town = str(selected_row["town_standard"])
-  cur_asking = float(selected_row["price"])
-  cur_fair = float(selected_row["predicted_fair_price"])
-  cur_diff_pct = float(selected_row["price_diff_pct"])
-  cur_annual_rent = float(selected_row["est_annual_rent"])
-  cur_gross_yield = float(selected_row["est_gross_yield"])
-
-  # 1. How & why Abuja property prices change
-  if any(
-      k in q
-      for k in [
-          "change",
-          "fluctuate",
-          "rise",
-          "increase",
-          "drop",
-          "fall",
-          "inflation",
-          "market",
-          "why",
-          "trend",
-      ]
-  ):
-    return (
-        "**How Abuja Property Prices Move**\n"
-        "- **Construction and Input Costs:** Cement, steel, reinforcement, and"
-        " finishing materials drive baseline replacement values across Abuja.\n"
-        "- **Corridor and Infrastructure Growth:** Expansion and road"
-        " upgrades around **Lugbe**, **Kubwa**, **Lokogoma**, and **Jahi**"
-        " reshape buyer demand over time.\n"
-        "- **Serviced Estate Standards:** Reliable power backup, security,"
-        " access roads, and estate management create clear price spreads in"
-        " **Wuye** and **Gwarinpa**.\n"
-        "- **Asking vs. Valuation Spread:** Sellers in Abuja often price in"
-        " negotiation room, making fair-value benchmarking essential before"
-        " making an offer."
-    )
-
-  # 2. Compare two Abuja neighborhoods
-  if len(matched_towns) >= 2 and any(
-      k in q for k in ["compare", "vs", "versus", "between", "difference"]
-  ):
-    t1, t2 = matched_towns[0], matched_towns[1]
-    d1 = abuja_df[abuja_df["town_standard"] == t1]
-    d2 = abuja_df[abuja_df["town_standard"] == t2]
-    if d1.empty or d2.empty:
-      return (
-          f"Insufficient Abuja listing records to compare **{t1}** and"
-          f" **{t2}**."
-      )
-    lower_fair_town = (
-        t1
-        if d1["predicted_fair_price"].mean() < d2["predicted_fair_price"].mean()
-        else t2
-    )
-    return (
-        f"**Abuja Neighborhood Comparison: {t1} vs. {t2}**\n"
-        f"- **{t1} ({len(d1)} listings):** Avg Asking"
-        f" **N{d1['price'].mean():,.0f}** | Avg Fair Value"
-        f" **N{d1['predicted_fair_price'].mean():,.0f}**\n"
-        f"- **{t2} ({len(d2)} listings):** Avg Asking"
-        f" **N{d2['price'].mean():,.0f}** | Avg Fair Value"
-        f" **N{d2['predicted_fair_price'].mean():,.0f}**\n"
-        f"- **Lower Average Fair Value:** **{lower_fair_town}**"
-    )
-
-  # 3. Budget lookup across Abuja
-  if budget_naira is not None:
-    subset = abuja_df[
-        abuja_df["town_standard"].isin(available_towns)
-        & (abuja_df["price"] <= budget_naira)
-    ].copy()
-    if matched_towns:
-      subset = subset[subset["town_standard"].isin(matched_towns)]
-    if req_beds:
-      subset = subset[subset["bedrooms"] == req_beds]
-
-    area_label = ", ".join(matched_towns) if matched_towns else "Abuja"
-    bed_label = f", {req_beds}-bedroom" if req_beds else ""
-
-    if subset.empty:
-      return (
-          f"No Abuja properties found at or below **N{budget_naira:,.0f}** in"
-          f" **{area_label}**{bed_label}. Consider raising the budget or"
-          " checking **Lugbe** or **Kubwa**."
-      )
-
-    top_matches = subset.sort_values("price_diff_pct").head(3)
-    lines = [
-        f"Found **{len(subset)}** Abuja listings at or below"
-        f" **N{budget_naira:,.0f}** in **{area_label}**{bed_label}. Top"
-        " matches:"
+def load_nationwide_properties() -> pd.DataFrame:
+    base_rows = []
+    property_types = [
+        ("3-Bedroom Detached Bungalow", 3, 0.92, 1.03),
+        ("4-Bedroom Semi-Detached Duplex", 4, 1.15, 1.00),
+        ("5-Bedroom Fully Detached Duplex", 5, 1.45, 0.96),
+        ("2-Bedroom Apartment / Flat", 2, 0.72, 1.08),
     ]
-    for _, row in top_matches.iterrows():
-      lines.append(
-          f"- **{row['town_standard']}, Abuja** — {int(row['bedrooms'])}-bed"
-          f" {row['title_clean']} | Asking: **N{row['price']:,.0f}** | Fair"
-          f" Value: **N{row['predicted_fair_price']:,.0f}**"
-          f" ({row['price_diff_pct']:+.1f}%)"
-      )
-    return "\n".join(lines)
 
-  # 4. Negotiation / bargaining guidance
-  if any(
-      k in q
-      for k in [
-          "bargain",
-          "negotiate",
-          "offer",
-          "counter",
-          "reduce",
-          "discount",
-      ]
-  ):
-    target_low = cur_fair * 0.90
-    target_mid = cur_fair * 0.95
-    if cur_diff_pct > 5:
-      return (
-          f"**Negotiation Guide — {cur_bedrooms}-Bed {cur_title} in"
-          f" {cur_town}, Abuja**\n"
-          f"- **Asking vs. Fair Value:** **N{cur_asking:,.0f}** vs."
-          f" **N{cur_fair:,.0f}** (**{cur_diff_pct:+.1f}%**)\n"
-          f"- **Opening Counter-Offer:** **N{target_low:,.0f}** (~10% below"
-          " fair value)\n"
-          f"- **Target Closing Range:** **N{target_mid:,.0f}** –"
-          f" **N{cur_fair:,.0f}**"
-      )
-    if cur_diff_pct <= -15:
-      return (
-          f"**Negotiation Guide — {cur_bedrooms}-Bed {cur_title} in"
-          f" {cur_town}, Abuja**\n"
-          f"- Listed **{abs(cur_diff_pct):.1f}% below** fair value"
-          f" (**N{cur_asking:,.0f}** asking vs. **N{cur_fair:,.0f}** fair"
-          " value) — **Strong Buy**.\n"
-          f"- Keep your offer near **N{cur_asking * 0.96:,.0f}** to avoid"
-          " losing the listing."
-      )
+    for state_name, region, base_price, base_cagr, base_yield, coverage in NIGERIA_LOCATIONS:
+        for p_type, beds, mult, yield_mult in property_types:
+            fair_val = round(base_price * mult, -3)
+            asking_val = round(fair_val * 0.96, -3)
+            base_rows.append(
+                {
+                    "state": state_name,
+                    "region": region,
+                    "district": f"{state_name} Central / Growth Corridor",
+                    "property_type": p_type,
+                    "bedrooms": beds,
+                    "asking_price": asking_val,
+                    "fair_value": fair_val,
+                    "annual_cagr": base_cagr,
+                    "gross_yield": round(base_yield * yield_mult, 4),
+                    "data_coverage": coverage,
+                    "source_type": "Nationwide Baseline Model",
+                }
+            )
+
+    df = pd.DataFrame(base_rows)
+
+    # Merge existing CSV data if available in the repository
+    csv_candidates = [
+        "abuja_rental_cleaned.csv",
+        "nigeria_properties.csv",
+        "properties.csv",
+    ]
+    for path in csv_candidates:
+        if os.path.exists(path):
+            try:
+                ext = pd.read_csv(path)
+                cols = {c.lower().strip(): c for c in ext.columns}
+                price_col = next(
+                    (cols[k] for k in ["price", "asking_price", "amount"] if k in cols),
+                    None,
+                )
+                if price_col:
+                    state_col = next(
+                        (cols[k] for k in ["state", "city", "location"] if k in cols),
+                        None,
+                    )
+                    area_col = next(
+                        (
+                            cols[k]
+                            for k in ["neighborhood", "area", "district", "suburb", "title"]
+                            if k in cols
+                        ),
+                        None,
+                    )
+                    bed_col = next(
+                        (cols[k] for k in ["bedrooms", "beds", "bedroom"] if k in cols),
+                        None,
+                    )
+                    type_col = next(
+                        (cols[k] for k in ["property_type", "type", "category"] if k in cols),
+                        None,
+                    )
+
+                    parsed_rows = []
+                    for idx, r in ext.iterrows():
+                        raw_price = pd.to_numeric(r[price_col], errors="coerce")
+                        if pd.isna(raw_price) or raw_price <= 1_000_000:
+                            continue
+                        st_name = normalize_state_name(r[state_col]) if state_col else "FCT Abuja"
+                        st_meta = next(item for item in NIGERIA_LOCATIONS if item[0] == st_name)
+                        beds = int(pd.to_numeric(r[bed_col], errors="coerce")) if bed_col else 4
+                        if beds <= 0 or beds > 12:
+                            beds = 4
+                        p_type = (
+                            str(r[type_col]).strip()
+                            if type_col and pd.notna(r[type_col])
+                            else f"{beds}-Bedroom Residential Property"
+                        )
+                        district = (
+                            str(r[area_col]).strip()[:60]
+                            if area_col and pd.notna(r[area_col])
+                            else f"{st_name} Listing #{idx + 1}"
+                        )
+                        fair_val = float(raw_price) * 1.05
+                        parsed_rows.append(
+                            {
+                                "state": st_name,
+                                "region": st_meta[1],
+                                "district": district,
+                                "property_type": p_type,
+                                "bedrooms": beds,
+                                "asking_price": float(raw_price),
+                                "fair_value": fair_val,
+                                "annual_cagr": st_meta[3],
+                                "gross_yield": st_meta[4],
+                                "data_coverage": "Observed + Baseline",
+                                "source_type": os.path.basename(path),
+                            }
+                        )
+                    if parsed_rows:
+                        parsed_df = pd.DataFrame(parsed_rows)
+                        df = pd.concat([parsed_df, df], ignore_index=True)
+            except Exception:
+                pass
+
+    return df
+
+
+def analyze_user_text_and_forecast(
+    user_text: str,
+    starting_price: float,
+    base_cagr: float,
+    target_year: int,
+    current_year: int = 2026,
+) -> dict:
+    years = max(1, target_year - current_year)
+    text_clean = (user_text or "").strip().lower()
+    tokens = re.findall(r"[a-z0-9]+", text_clean)
+
+    text_rate_delta = 0.0
+    matched_factors = []
+
+    # Check single words and bigrams
+    for tok in tokens:
+        if tok in POSITIVE_TERMS:
+            text_rate_delta += POSITIVE_TERMS[tok]
+            matched_factors.append(f"+{tok}")
+        elif tok in NEGATIVE_TERMS:
+            text_rate_delta += NEGATIVE_TERMS[tok]
+            matched_factors.append(f"-{tok}")
+
+    for i in range(len(tokens) - 1):
+        bigram = f"{tokens[i]} {tokens[i + 1]}"
+        if "price drop" in bigram or "prices drop" in bigram or "price fall" in bigram or "go down" in bigram:
+            text_rate_delta -= 0.020
+            matched_factors.append(f"-{bigram}")
+        elif "price rise" in bigram or "prices rise" in bigram or "go up" in bigram or "price high" in bigram:
+            text_rate_delta += 0.018
+            matched_factors.append(f"+{bigram}")
+
+    # Bound the text adjustment so a single prompt does not produce unrealistic numbers
+    text_rate_delta = max(-0.065, min(0.055, text_rate_delta))
+
+    conservative_rate = max(-0.05, min(0.18, base_cagr + text_rate_delta - 0.015))
+    base_rate = max(-0.04, min(0.20, base_cagr + text_rate_delta))
+    optimistic_rate = max(-0.02, min(0.22, base_cagr + text_rate_delta + 0.015))
+
+    conservative_price = starting_price * ((1.0 + conservative_rate) ** years)
+    base_price = starting_price * ((1.0 + base_rate) ** years)
+    optimistic_price = starting_price * ((1.0 + optimistic_rate) ** years)
+
+    pct_change_base = ((base_price - starting_price) / starting_price) * 100.0 if starting_price > 0 else 0.0
+
+    if base_rate > 0.005:
+        direction = "HIGH (Price Expected to Rise)"
+        signal_class = "signal-rise"
+        summary = (
+            f"Projected to rise from {format_naira(starting_price)} to "
+            f"{format_naira(base_price)} ({pct_change_base:+.1f}%) by {target_year} "
+            f"under the base estimate ({base_rate * 100:.1f}% annualized rate)."
+        )
+    elif base_rate < -0.005:
+        direction = "DROP (Price Expected to Fall)"
+        signal_class = "signal-drop"
+        summary = (
+            f"Projected to drop from {format_naira(starting_price)} to "
+            f"{format_naira(base_price)} ({pct_change_base:+.1f}%) by {target_year} "
+            f"under the base estimate ({base_rate * 100:.1f}% annualized rate)."
+        )
+    else:
+        direction = "STEADY / FLAT"
+        signal_class = "signal-neutral"
+        summary = (
+            f"Projected to stay near {format_naira(base_price)} ({pct_change_base:+.1f}%) "
+            f"by {target_year} under the base estimate."
+        )
+
+    return {
+        "years": years,
+        "direction": direction,
+        "signal_class": signal_class,
+        "summary": summary,
+        "base_rate": base_rate,
+        "conservative_price": conservative_price,
+        "base_price": base_price,
+        "optimistic_price": optimistic_price,
+        "pct_change_base": pct_change_base,
+        "matched_factors": matched_factors,
+    }
+
+
+def answer_advisor_question(question: str, state_name: str, forecast_info: dict) -> str:
+    q = (question or "").strip()
+    if not q:
+        return "Enter a question about state pricing, yields, or the 2060 projection."
     return (
-        f"**Negotiation Guide — {cur_bedrooms}-Bed {cur_title} in"
-        f" {cur_town}, Abuja**\n"
-        f"- Priced close to fair value (**{cur_diff_pct:+.1f}%** vs."
-        f" **N{cur_fair:,.0f}**).\n"
-        f"- Aim around **N{target_mid:,.0f}** (~5% discount) to improve"
-        f" gross yield above **{cur_gross_yield:.1f}%**."
+        f"For {state_name} over {forecast_info['years']} years (to 2060 / selected target year), "
+        f"the current scenario signal is {forecast_info['direction']} with a base estimate of "
+        f"{format_naira(forecast_info['base_price'])} (conservative: {format_naira(forecast_info['conservative_price'])}, "
+        f"optimistic: {format_naira(forecast_info['optimistic_price'])}). "
+        f"Note that multi-decade figures are modeled estimates rather than guarantees."
     )
 
-  # 5. Best deals / Strong Buy
-  if any(
-      k in q
-      for k in ["strong buy", "best deal", "undervalued", "cheap", "recommend"]
-  ):
-    subset = abuja_df[
-        abuja_df["town_standard"].isin(available_towns)
-        & (abuja_df["recommendation"] == "Strong Buy (Undervalued)")
-    ].copy()
-    if matched_towns:
-      subset = subset[subset["town_standard"].isin(matched_towns)]
-    if req_beds:
-      subset = subset[subset["bedrooms"] == req_beds]
-    if subset.empty:
-      return (
-          "No **Strong Buy** Abuja listings match that exact filter. Try"
-          " broadening the neighborhood or bedroom filter."
-      )
-    top_deals = subset.sort_values("price_diff_pct").head(3)
-    area_label = ", ".join(matched_towns) if matched_towns else "Abuja"
-    lines = [f"Top **Strong Buy** Abuja listings in **{area_label}**:"]
-    for _, row in top_deals.iterrows():
-      lines.append(
-          f"- **{row['town_standard']}, Abuja** — {int(row['bedrooms'])}-bed"
-          f" {row['title_clean']} | Asking: **N{row['price']:,.0f}** | Fair"
-          f" Value: **N{row['predicted_fair_price']:,.0f}**"
-          f" ({row['price_diff_pct']:+.1f}%)"
-      )
-    return "\n".join(lines)
 
-  # 6. Specific Abuja neighborhood summary
-  if matched_towns:
-    town_name = matched_towns[0]
-    t_df = abuja_df[abuja_df["town_standard"] == town_name]
-    if req_beds:
-      t_df = t_df[t_df["bedrooms"] == req_beds]
-    if t_df.empty:
-      return f"No matching listings found in **{town_name}, Abuja**."
-    return (
-        f"**{town_name}, Abuja Market Summary ({len(t_df)} listings)**\n"
-        f"- **Average Asking Price:** N{t_df['price'].mean():,.0f}\n"
-        f"- **Average Fair Value:**"
-        f" N{t_df['predicted_fair_price'].mean():,.0f}\n"
-        f"- **Price Range:** N{t_df['price'].min():,.0f} –"
-        f" N{t_df['price'].max():,.0f}"
-    )
+df = load_nationwide_properties()
 
-  # 7. Rental yield & return
-  if any(k in q for k in ["yield", "rent", "roi", "return"]):
-    return (
-        f"**Rental & Yield Summary — {cur_bedrooms}-Bed {cur_title} in"
-        f" {cur_town}, Abuja**\n"
-        f"- **Estimated Annual Rent:** **N{cur_annual_rent:,.0f}**"
-        f" ({yield_rate * 100:.1f}% benchmark)\n"
-        f"- **Gross Yield at Asking Price:** **{cur_gross_yield:.1f}%**"
-    )
-
-  # Default Abuja guidance
-  return (
-      f"Active selection: **{cur_bedrooms}-bed {cur_title} in {cur_town},"
-      f" Abuja** (Asking: **N{cur_asking:,.0f}** | Fair Value:"
-      f" **N{cur_fair:,.0f}**).\n\n"
-      "Ask about Abuja real estate:\n"
-      '- *"What can N50,000,000 buy in Lokogoma?"*\n'
-      '- *"Compare Gwarinpa vs Wuye"*\n'
-      '- *"How much should I bargain on this property?"*\n'
-      '- *"Why do Abuja property prices change?"*'
-  )
-
-
-# --- Main Application Flow ---
-if not os.path.exists(DATA_PATH):
-  st.error(f"Dataset not found: `{DATA_PATH}`")
-  st.stop()
-
-base_df = load_abuja_data(DATA_PATH)
-model, model_metrics = load_or_train_model(base_df, MODEL_PATH)
-
-st.title("Abuja Property Valuation & Investment Advisor")
-st.caption(
-    "Property valuation, pricing spread analysis, and investment guidance"
-    " across Gwarinpa, Wuye, Jahi, Lokogoma, Lugbe, and Kubwa."
-)
-
-# Sidebar: Valuation assumptions + Abuja AI Property Advisor
+# Sidebar: State selection + Property Advisor
 with st.sidebar:
-  st.header("Valuation Settings")
-  yield_pct_input = st.slider(
-      "Benchmark Annual Yield (%)",
-      min_value=3.0,
-      max_value=12.0,
-      value=5.0,
-      step=0.5,
-  )
-  yield_rate = yield_pct_input / 100.0
+    st.markdown("### Nationwide Controls")
+    all_states = [s[0] for s in NIGERIA_LOCATIONS]
+    selected_state = st.selectbox("State or FCT (All 36 + FCT)", all_states, index=0)
 
-  df = score_abuja_properties(base_df, model, yield_rate=yield_rate)
+    state_df = df[df["state"] == selected_state].copy()
+    property_options = state_df["property_type"].unique().tolist()
+    selected_property = st.selectbox("Property Profile", property_options, index=0)
 
-  st.markdown("---")
-  st.header("Abuja Property Advisor")
-  st.caption(
-      "Ask about Abuja budgets, counter-offers, yields, neighborhood"
-      " comparisons, or market drivers."
-  )
+    prop_row = state_df[state_df["property_type"] == selected_property].iloc[0]
 
-  if "chat_messages" not in st.session_state:
-    st.session_state.chat_messages = [{
-        "role": "assistant",
-        "content": (
-            "Ask me about Abuja property budgets, bargaining targets, yields,"
-            " or comparisons across Gwarinpa, Wuye, Jahi, Lokogoma, Lugbe, and"
-            " Kubwa."
-        ),
-    }]
+    st.markdown("---")
+    st.markdown("### Property Advisor")
+    advisor_prompt = st.text_area(
+        "Ask about state prices, yields, or 2060 scenarios",
+        placeholder="Example: Compare 2060 growth vs. current fair value in this state.",
+        height=90,
+    )
+    ask_clicked = st.button("Run Advisor", use_container_width=True)
 
-  for msg in st.session_state.chat_messages:
-    with st.chat_message(msg["role"]):
-      st.markdown(msg["content"])
-
-# Ensure `df` is defined even if sidebar rendering order changes
-if "df" not in locals():
-  df = score_abuja_properties(base_df, model, yield_rate=0.05)
-
-# Property Selector & Valuation Metrics
-selected_idx = st.selectbox(
-    "Select an Abuja Property to Evaluate",
-    options=df.index.tolist(),
-    format_func=lambda idx: (
-        f"{df.loc[idx, 'town_standard']} — {int(df.loc[idx, 'bedrooms'])}-Bed"
-        f" {df.loc[idx, 'title_clean']} (Asking:"
-        f" N{df.loc[idx, 'price']:,.0f})"
-    ),
+# Header banner
+st.markdown(
+    """
+    <div class="main-header">
+        <h1>Nigeria Property Valuation &amp; Long-Term Forecast Advisor</h1>
+        <p>Nationwide coverage across all 36 states and the FCT with valuation benchmarks, yield estimates, and forward price projections to 2060.</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
-selected_property = df.loc[selected_idx]
 
-m1, m2, m3, m4 = st.columns(4)
-m1.metric("Asking Price", f"N{selected_property['price']:,.0f}")
-m2.metric(
-    "Predicted Fair Value", f"N{selected_property['predicted_fair_price']:,.0f}"
+# Top valuation metrics for selected state and property
+c1, c2, c3, c4 = st.columns(4)
+spread_pct = ((prop_row["asking_price"] - prop_row["fair_value"]) / prop_row["fair_value"]) * 100.0
+
+with c1:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">Reference Asking Price</div>
+            <div class="metric-value">{format_naira(prop_row['asking_price'])}</div>
+            <div class="metric-sub">{selected_state} ({prop_row['region']})</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with c2:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">Estimated Fair Value</div>
+            <div class="metric-value">{format_naira(prop_row['fair_value'])}</div>
+            <div class="metric-sub">Spread vs. Asking: {spread_pct:+.1f}%</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with c3:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">Est. Gross Rental Yield</div>
+            <div class="metric-value">{prop_row['gross_yield'] * 100:.1f}%</div>
+            <div class="metric-sub">Baseline annual benchmark</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with c4:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">Data Coverage Tier</div>
+            <div class="metric-value">{prop_row['data_coverage']}</div>
+            <div class="metric-sub">Source: {prop_row['source_type']}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# Interactive 2060 text-driven prediction section
+st.markdown("### 2060 Price Direction & Scenario Estimator")
+st.write(
+    "Type a market note, location driver, or price assumption below to see whether the model projects the price to be HIGH (rise) or DROP by 2060."
 )
-m3.metric("Asking vs. Fair Value", f"{selected_property['price_diff_pct']:+.1f}%")
-m4.metric("Est. Annual Rent", f"N{selected_property['est_annual_rent']:,.0f}")
+
+col_input1, col_input2, col_input3 = st.columns([2.4, 1.1, 0.9])
+with col_input1:
+    user_thesis = st.text_input(
+        "Type market conditions, area drivers, or what you expect to happen",
+        value="New road and infrastructure expansion with steady urban demand, though inflation fluctuates",
+        placeholder="Type anything here, e.g. major infrastructure and growth vs. flooding, insecurity, or oversupply...",
+    )
+with col_input2:
+    starting_amount = st.number_input(
+        "Starting Purchase Price (Naira)",
+        min_value=500_000.0,
+        max_value=5_000_000_000.0,
+        value=float(prop_row["asking_price"]),
+        step=1_000_000.0,
+    )
+with col_input3:
+    target_year = st.number_input(
+        "Target Forecast Year",
+        min_value=2027,
+        max_value=2100,
+        value=2060,
+        step=1,
+    )
+
+forecast = analyze_user_text_and_forecast(
+    user_text=user_thesis,
+    starting_price=starting_amount,
+    base_cagr=float(prop_row["annual_cagr"]),
+    target_year=int(target_year),
+)
 
 st.markdown(
-    f"**Investment Recommendation:** {selected_property['recommendation']}  \n"
-    f"**Estimated Gross Yield at Asking Price:**"
-    f" {selected_property['est_gross_yield']:.2f}% (based on"
-    f" {yield_pct_input:.1f}% benchmark yield)"
+    f"""
+    <div class="{forecast['signal_class']}">
+        <div>2060 / Target Year Outlook: {forecast['direction']}</div>
+        <div style="font-weight: 400; margin-top: 4px;">{forecast['summary']}</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
-st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
+if forecast["matched_factors"]:
+    st.caption(f"Detected text signals: {', '.join(forecast['matched_factors'])}")
 
-# Scored Listings Explorer
-st.subheader("Scored Abuja Listings Explorer")
+f1, f2, f3 = st.columns(3)
+with f1:
+    st.markdown(
+        f"""
+        <div class="metric-card" style="margin-top: 12px;">
+            <div class="metric-label">Conservative Estimate ({target_year})</div>
+            <div class="metric-value">{format_naira(forecast['conservative_price'])}</div>
+            <div class="metric-sub">Lower-bound scenario</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+with f2:
+    st.markdown(
+        f"""
+        <div class="metric-card" style="margin-top: 12px;">
+            <div class="metric-label">Base Estimate ({target_year})</div>
+            <div class="metric-value">{format_naira(forecast['base_price'])}</div>
+            <div class="metric-sub">Change: {forecast['pct_change_base']:+.1f}% over {forecast['years']} yrs</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+with f3:
+    st.markdown(
+        f"""
+        <div class="metric-card" style="margin-top: 12px;">
+            <div class="metric-label">Optimistic Estimate ({target_year})</div>
+            <div class="metric-value">{format_naira(forecast['optimistic_price'])}</div>
+            <div class="metric-sub">Upper-bound scenario</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-f_col1, f_col2 = st.columns(2)
-with f_col1:
-  selected_towns = st.multiselect(
-      "Filter by Neighborhood",
-      options=ABUJA_TOWNS,
-      default=ABUJA_TOWNS,
-  )
-with f_col2:
-  rec_options = [
-      "Strong Buy (Undervalued)",
-      "Fair Value / Hold",
-      "Overpriced (Negotiate / Skip)",
-  ]
-  selected_recs = st.multiselect(
-      "Filter by Recommendation",
-      options=rec_options,
-      default=rec_options,
-  )
+if ask_clicked:
+    st.info(answer_advisor_question(advisor_prompt, selected_state, forecast))
 
-filtered_df = df[
-    df["town_standard"].isin(selected_towns if selected_towns else ABUJA_TOWNS)
-    & df["recommendation"].isin(selected_recs if selected_recs else rec_options)
-].copy()
-
-st.caption(
-    f"Showing {len(filtered_df)} of {len(df)} scored Abuja properties | Model"
-    f" R2: {model_metrics['r2']:.3f} | Test MAE: N{model_metrics['mae']:,.0f}"
+# Nationwide summary table across states
+st.markdown("### Nationwide State & FCT Comparison")
+region_filter = st.selectbox(
+    "Filter Table by Region",
+    ["All Regions", "North Central", "North East", "North West", "South East", "South South", "South West"],
+    index=0,
 )
 
-display_cols = [
-    "town_standard",
-    "title_clean",
-    "bedrooms",
-    "price",
-    "predicted_fair_price",
-    "price_diff_pct",
-    "est_gross_yield",
-    "recommendation",
-]
-available_display_cols = [c for c in display_cols if c in filtered_df.columns]
+summary_df = df[df["property_type"] == property_options[0]].copy()
+if region_filter != "All Regions":
+    summary_df = summary_df[summary_df["region"] == region_filter]
 
-st.dataframe(
-    filtered_df[available_display_cols].rename(
-        columns={
-            "town_standard": "Neighborhood",
-            "title_clean": "Property Type",
-            "bedrooms": "Bedrooms",
-            "price": "Asking Price (N)",
-            "predicted_fair_price": "Fair Value (N)",
-            "price_diff_pct": "Spread (%)",
-            "est_gross_yield": "Gross Yield (%)",
-            "recommendation": "Recommendation",
-        }
-    ),
-    width="stretch",
-    hide_index=True,
+summary_df["Projected 2060 (Base)"] = summary_df.apply(
+    lambda r: analyze_user_text_and_forecast(
+        user_thesis, float(r["asking_price"]), float(r["annual_cagr"]), int(target_year)
+    )["base_price"],
+    axis=1,
+)
+summary_df["2060 Outlook"] = summary_df.apply(
+    lambda r: "HIGH"
+    if analyze_user_text_and_forecast(
+        user_thesis, float(r["asking_price"]), float(r["annual_cagr"]), int(target_year)
+    )["base_rate"]
+    > 0.005
+    else "DROP",
+    axis=1,
 )
 
-# Sidebar Chat Input (renders pinned at bottom of sidebar)
-if user_prompt := st.sidebar.chat_input(
-    "Ask about Abuja prices, budgets, or areas..."
-):
-  st.session_state.chat_messages.append(
-      {"role": "user", "content": user_prompt}
-  )
-  reply = generate_property_ai_reply(
-      prompt_text=user_prompt,
-      abuja_df=df,
-      selected_row=selected_property,
-      yield_rate=yield_rate,
-  )
-  st.session_state.chat_messages.append(
-      {"role": "assistant", "content": reply}
-  )
-  st.rerun()
+display_table = summary_df[
+    ["state", "region", "asking_price", "fair_value", "Projected 2060 (Base)", "2060 Outlook", "data_coverage"]
+].rename(
+    columns={
+        "state": "State / FCT",
+        "region": "Region",
+        "asking_price": "Reference Price (N)",
+        "fair_value": "Est. Fair Value (N)",
+        "data_coverage": "Coverage",
+    }
+)
+
+st.dataframe(display_table, use_container_width=True, hide_index=True)
+
+st.markdown(
+    """
+    <div class="disclaimer-box">
+        Forecasts through 2060 and beyond are scenario-based estimates driven by baseline state assumptions and user-entered text signals. They are modeled projections for planning and defense discussion, not financial guarantees.
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
